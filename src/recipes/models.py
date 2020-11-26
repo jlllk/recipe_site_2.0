@@ -47,10 +47,15 @@ class Recipe(models.Model):
         blank=False,
         verbose_name='Время приготовления',
     )
+    pub_date = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Дата публикации'
+    )
 
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ['-pub_date']
 
     def __str__(self):
         return self.title

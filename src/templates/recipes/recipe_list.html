@@ -13,7 +13,7 @@
             </li>
             <li class="tags__item">
                 <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></a>
-                <span for="lunch" class="tags__label">Обед</span>
+                <span class="tags__label">Обед</span>
             </li>
             <li class="tags__item">
                 <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></a>
@@ -22,7 +22,7 @@
         </ul>
     </div>
 
-    {% for recipe in recipes %}
+    {% for recipe in object_list %}
         <div class="card" data-id="{{ recipe.id }}">
             <a href="#" class="link" target="_blank"><img src="{{ recipe.image.url }}" alt="Какой-то текст" class="card__image"></a>
             <div class="card__body">

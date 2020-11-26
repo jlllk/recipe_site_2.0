@@ -1,9 +1,14 @@
 from django.shortcuts import render
+from django.views.generic.list import ListView
 
 from .models import Recipe
 
 
-def index(request):
-    recipes = Recipe.objects.all()
-    context = {'recipes': recipes}
-    return render(request, 'index.html', context)
+class RecipeListView(ListView):
+    """
+    Домашня страница сайта.
+    """
+    model = Recipe
+    paginate_by = 8
+
+
