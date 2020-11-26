@@ -9,11 +9,11 @@
         <ul class="tags">
             <li class="tags__item">
                 <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></a>
-                <span class="tags__label">Завтрак</span>
+                <label class="tags__label">Завтрак</label>
             </li>
             <li class="tags__item">
                 <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></a>
-                <span for="lunch" class="tags__label">Обед</span>
+                <label for="lunch" class="tags__label">Обед</label>
             </li>
             <li class="tags__item">
                 <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></a>
@@ -22,11 +22,11 @@
         </ul>
     </div>
 
-    {% for recipe in recipes %}
+    {% for recipe in object_list %}
         <div class="card" data-id="{{ recipe.id }}">
             <a href="#" class="link" target="_blank"><img src="{{ recipe.image.url }}" alt="Какой-то текст" class="card__image"></a>
             <div class="card__body">
-                <a class="card__title link" href="#" target="_blank">{{ recipes.title }}</a>
+                <a class="card__title link" href="#" target="_blank">{{ recipe.title }}</a>
                 <ul class="card__items">
                     <li class="card__item"><span class="badge badge_style_green">{{ recipe.tag }}</span></li>
                 </ul>

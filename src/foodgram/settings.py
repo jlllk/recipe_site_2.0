@@ -3,11 +3,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'vfd%qdcj&p-)5t@wnbjom*f8)k!n4g_mawmfk7-@p#wx-+ik1='
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -20,16 +15,16 @@ AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 INSTALLED_APPS = [
-    # my app
-    'api',
-    'recipes',
-    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # my app
+    'api',
+    'recipes',
+    'users',
     # third party app
     'rest_framework',
 ]
