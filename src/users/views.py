@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
@@ -15,7 +16,7 @@ class SignUpView(CreateView):
     template_name = 'auth/registration.html'
 
 
-class UserFollowView(View):
+class UserFollowView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         following = Follow.objects.filter(user=request.user)
