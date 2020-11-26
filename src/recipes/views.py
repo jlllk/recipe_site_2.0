@@ -5,7 +5,7 @@ from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Recipe, RecipeFavorite
+from .models import Recipe, RecipeFavorite, ShoppingList
 
 User = get_user_model()
 
@@ -30,3 +30,15 @@ class RecipeFavoriteView(LoginRequiredMixin, View):
         favorite = RecipeFavorite.objects.filter(user=request.user)
         context = {'favorite': favorite}
         return render(request, 'recipes/recipe_favorite.html', context=context)
+
+
+class ShoppingListView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        shopping_list = ShoppingList.objects.filter(user=request.user)
+        context = {'shopping_list': shopping_list}
+        return render(
+            request,
+            'recipes/recipe_shop_list.html',
+            context=context,
+        )

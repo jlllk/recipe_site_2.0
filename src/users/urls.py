@@ -1,9 +1,10 @@
 from django.urls import path
 
 from .views import UserFollowView
-from recipes.views import RecipeFavoriteView
+from recipes.views import RecipeFavoriteView, ShoppingListView
 
 urlpatterns = [
     path('follow/', UserFollowView.as_view(), name='user_follow'),
     path('favorite/', RecipeFavoriteView.as_view(), name='recipe_favorite'),
+    path('shop-list/', ShoppingListView.as_view(), name='shopping_list'),
 ]
