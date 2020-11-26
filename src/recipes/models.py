@@ -32,11 +32,10 @@ class Recipe(models.Model):
     title = models.CharField(max_length=200, verbose_name='Название')
     image = models.ImageField(upload_to='recipes', verbose_name='Изображение')
     description = models.TextField(
-        null=True,
-        blank=True,
+        blank=False,
         verbose_name='Описание'
     )
-    tag = models.ManyToManyField(Tag)
+    tag = models.ManyToManyField(Tag, blank=False)
     cooking_time = models.SmallIntegerField(
         blank=False,
         verbose_name='Время приготовления',

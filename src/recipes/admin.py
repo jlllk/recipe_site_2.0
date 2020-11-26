@@ -4,13 +4,14 @@ from .models import Recipe, Ingredient, RecipeIngredient, Tag, RecipeFavorite, S
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'author')
-    search_fields = ('title',)
+    list_display = ('title', 'author')
+    search_fields = ('title', 'author', 'tag')
+    list_filter = ('title', 'author', 'tag')
     empty_value_display = '-пусто-'
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'unit')
+    list_display = ('name', 'unit')
     search_fields = ('name',)
     empty_value_display = '-пусто-'
 
