@@ -7,7 +7,8 @@ from recipes.views import HomePageView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('users.urls')),
+    path('auth/', include('users.auth_urls')),
+    path('user/', include('users.urls')),
     path('recipe/', include('recipes.urls')),
     path('', HomePageView.as_view(), name='home_page'),
 ]
