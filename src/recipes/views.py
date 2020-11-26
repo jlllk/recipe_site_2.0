@@ -2,10 +2,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
+from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from .models import Recipe, RecipeFavorite, ShoppingList
+from .forms import RecipeCreationModelForm
 
 User = get_user_model()
 
@@ -17,6 +19,12 @@ class HomePageView(ListView):
 
 class RecipeDetailView(DetailView):
     model = Recipe
+
+
+class RecipeCreateView(CreateView):
+    model = Recipe
+    form_class = RecipeCreationModelForm
+    template_name = 'recipes/recipe_create.html'
 
 
 class RecipeAuthorPageView(DetailView):
