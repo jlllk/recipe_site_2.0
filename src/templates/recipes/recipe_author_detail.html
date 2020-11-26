@@ -31,12 +31,10 @@
             <div class="card" data-id="{{ recipe.id }}">
                 <a href="#" class="link" target="_blank"><img src="{{ recipe.image.url }}" alt="Какой-то текст" class="card__image"></a>
                 <div class="card__body">
-                    <a class="card__title link" href="#" target="_blank">{{ recipe.title }}</a>
-                    <ul class="card__items">
-                        <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
-                        <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                        <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
-                    </ul>
+                    <a class="card__title link" href="{% url 'recipe_detail' pk=recipe.pk %}" target="_blank">{{ recipe.title }}</a>
+
+                    {% include 'recipes/badges.html' with object=recipe %}
+
                     <div class="card__items card__items_column">
                         <p class="card__text"><span class="icon-time"></span> {{ cooking.time }} мин.</p>
                         <p class="card__text"><span class="icon-user"></span> <a href="{% url 'recipe_author' pk=object.pk %}" style="color: black">{{ object.username }}</a></p>

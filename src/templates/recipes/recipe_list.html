@@ -27,9 +27,9 @@
             <a href="#" class="link" target="_blank"><img src="{{ recipe.image.url }}" alt="Какой-то текст" class="card__image"></a>
             <div class="card__body">
                 <a class="card__title link" href="{% url 'recipe_detail' pk=recipe.pk %}">{{ recipe.title }}</a>
-                <ul class="card__items">
-                    <li class="card__item"><span class="badge badge_style_green">{{ recipe.tag }}</span></li>
-                </ul>
+
+                {% include 'recipes/badges.html' with object=recipe %}
+
                 <div class="card__items card__items_column">
                     <p class="card__text"><span class="icon-time"></span> {{ recipe.cooking_time }}  мин.</p>
                     <p class="card__text"><span class="icon-user"></span> <a href="{% url 'recipe_author' pk=recipe.author.pk %}" style="color: black">{{ recipe.author }}</a></p>

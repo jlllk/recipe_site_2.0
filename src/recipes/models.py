@@ -5,13 +5,18 @@ from django.db import models
 User = get_user_model()
 
 
-class Tag(models.TextChoices):
+class Tag(models.Model):
     """
     Теги для модели Recipe
     """
-    BREAKFAST = 'завтрак', 'Завтрак'
-    LUNCH = 'обед', 'Обед'
-    DINNER = 'ужин', 'Ужин'
+    title = models.CharField(max_length=100, blank=False, verbose_name='Тег')
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
+    def __str__(self):
+        return self.title
 
 
 class Recipe(models.Model):
@@ -31,12 +36,7 @@ class Recipe(models.Model):
         blank=True,
         verbose_name='Описание'
     )
-    tag = models.CharField(
-        choices=Tag.choices,
-        default=Tag.BREAKFAST,
-        max_length=50,
-        verbose_name='Тег',
-    )
+    tag = models.ManyToManyField(Tag)
     cooking_time = models.SmallIntegerField(
         blank=False,
         verbose_name='Время приготовления',

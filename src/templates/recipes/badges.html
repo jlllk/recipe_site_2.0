@@ -1,0 +1,8 @@
+<ul class="card__items">
+    {% for tag in object.tag.all %}
+        <li class="card__item"><span class="badge
+        {% if tag.title == 'Завтрак' %} badge_style_orange
+        {% elif tag.title == 'Обед' %} badge_style_green
+        {% else %} badge_style_purple {% endif %}">{{ tag.title }}</span></li>
+    {% endfor %}
+</ul>
