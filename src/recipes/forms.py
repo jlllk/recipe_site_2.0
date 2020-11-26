@@ -14,5 +14,9 @@ class RecipeCreationModelForm(forms.ModelForm):
             'image',
         )
         widgets = {
-            'tag': forms.CheckboxSelectMultiple()
+            'tag': forms.CheckboxSelectMultiple(
+                attrs={
+                    "class": "tags__checkbox"
+                }
+            )
         }

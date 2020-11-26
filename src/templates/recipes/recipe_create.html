@@ -1,21 +1,33 @@
 {% extends 'base.html' %}
 {% load user_filters %}
 
-{% block title %}Создание рецепта{% endblock %}
+{% block title %}
+    {% if object %}
+        Редактирование рецепта
+    {% else %}
+         Создание рецепта
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 
     <div class="main__header">
-        <h1 class="main__title">Создание рецепта</h1>
+        <h1 class="main__title">
+            {% if object %}
+                Редактирование рецепта
+            {% else %}
+                 Создание рецепта
+            {% endif %}
+        </h1>
     </div>
     <div class="form-container">
-        <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipe_create' %}">
+        <form class="form" method="post" enctype="multipart/form-data" action="">
             {% csrf_token %}
             <div class="form__group">
                 <label for="{{ form.title.id_for_label }}" class="form__label">Название рецепта</label>
                 <div class="form__field-group">
                     {{ form.title|addclass:"form__input" }}
-                    <span class="form__error">{{ form.title.error }}</span>
+                    <span class="form__error">{{ form.title.errors }}</span>
                 </div>
             </div>
             <div class="form__group">
@@ -24,16 +36,12 @@
                     <div class="tags">
                         {% for tag in form.tag %}
                              <div class="tags__item">
-                                <input type="checkbox" name="breakfast" id="id_breakfast" class="tags__checkbox
-                                {% if tag.choice_label == 'Завтрак' %} tags__checkbox_style_orange
-                                {% elif tag.choice_label == 'Обед' %} tags__checkbox_style_green
-                                {% else %} tags__checkbox_style_purple
-                                {% endif %}">
+                                {{ tag.tag }}
                                 <label for="id_breakfast" class="tags__label">{{ tag.choice_label }}</label>
                             </div>
                         {% endfor %}
                     </div>
-                    <span class="form__error">{{ form.tag.error }}</span>
+                    <span class="form__error">{{ form.tag.errors }}</span>
                 </div>
             </div>
             <div class="form__group">
@@ -59,14 +67,14 @@
                 <div class="form__field-group form__field-group_time">
                     {{ form.cooking_time|addclass:"form__input" }}
                     <label for="{{ form.cooking_time.id_for_label }}" class="form__label">минут</label>
-                    <span class="form__error">{{ form.cooking_time.error }}</span>
+                    <span class="form__error">{{ form.cooking_time.errors }}</span>
                 </div>
             </div>
             <div class="form__group">
                 <label for="{{ form.description.id_for_label }}" class="form__label">Описание</label>
                 <div class="form__field-group">
                     {{ form.description|addclass:"form__textarea" }}
-                    <span class="form__error">{{ form.description.error }}</span>
+                    <span class="form__error">{{ form.description.errors }}</span>
                 </div>
             </div>
             <div class="form__group">
@@ -77,7 +85,10 @@
                 </div>
             </div>
             <div class="form__footer">
-                <button type="submit" class="button button_style_blue">Создать рецепт</button>
+                {% if object %}
+                    <button class="button button_style_blue">Сохранить</button> <a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
+                {% else %}<button type="submit" class="button button_style_blue">Создать рецепт</button>
+                {% endif %}
             </div>
         </form>
     </div>
