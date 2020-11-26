@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block style %}
+    <link rel="stylesheet" href="{% static 'pages/single.css' %}">
+{% endblock %}
+
 {% block title %}{{ object.title }}{% endblock %}
 
 {% block content %}
@@ -9,10 +13,12 @@
             <div class="single-card__info">
                 <div class="single-card__header-info">
                     <h1 class="single-card__title">{{ object.title }}</h1>
-                    <div class="single-card__favorite">
-                        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
-                        <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
-                    </div>
+                    {% if requse.user.is_authenticated %}
+                        <div class="single-card__favorite">
+                            <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
+                            <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
+                        </div>
+                    {% endif %}
                 </div>
 
                 {% include 'recipes/badges.html' with object=object %}
@@ -21,12 +27,16 @@
                     <p class="single-card__text"><span class="icon-time"></span> {{ object.cooking_time }} мин.</p>
                     <ul class="single-card__items">
                         <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span> {{ object.author }}</p></li>
-                        <li class="single-card__item"><a style="margin-left: 2.5em" href="#" class="single-card__text">Редактировать рецепт</a></li>
+                        {% if object.author == requst.user %}
+                            <li class="single-card__item"><a style="margin-left: 2.5em" href="#" class="single-card__text">Редактировать рецепт</a></li>
+                        {% endif %}
                     </ul>
                 </div>
                 <ul class="single-card__items">
                     <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
-                    <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+                    {% if request.user.is_authenticated %}
+                         <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+                    {% endif %}
                 </ul>
                 <div class="single-card__section">
                     <h3 class="single-card__section-title">Ингридиенты:</h3>
