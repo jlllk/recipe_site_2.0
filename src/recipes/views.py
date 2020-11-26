@@ -2,10 +2,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from .models import Recipe, RecipeFavorite, ShoppingList
 from .forms import RecipeCreationModelForm
@@ -27,6 +28,13 @@ class RecipeCreateView(CreateView):
     form_class = RecipeCreationModelForm
     template_name = 'recipes/recipe_create.html'
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('recipe_detail', kwargs={'pk': self.object.pk})
+
 
 class RecipeUpdateView(UpdateView):
     model = Recipe
@@ -35,6 +43,11 @@ class RecipeUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('recipe_detail', kwargs={'pk': self.object.pk})
+
+
+class RecipeDeleteView(DeleteView):
+    model = Recipe
+    success_url = reverse_lazy('home_page')
 
 
 class RecipeAuthorPageView(DetailView):
