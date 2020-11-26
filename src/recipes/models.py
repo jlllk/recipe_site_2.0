@@ -25,17 +25,11 @@ class Recipe(models.Model):
         verbose_name='Автор',
     )
     title = models.CharField(max_length=200, verbose_name='Название')
-    slug = models.SlugField(unique=True, verbose_name='Слаг')
     image = models.ImageField(upload_to='recipes', verbose_name='Изображение')
     description = models.TextField(
         null=True,
         blank=True,
         verbose_name='Описание'
-    )
-    ingredient = models.ManyToManyField(
-        'IngredientQuantity',
-        related_name='recipes',
-        verbose_name='Ингредиенты',
     )
     tag = models.CharField(
         choices=Tag.choices,
@@ -84,10 +78,16 @@ class Ingredient(models.Model):
         return self.name
 
 
-class IngredientQuantity(models.Model):
+class RecipeIngredient(models.Model):
     """
     Модель описывает количество ингредиентов для рецепта.
     """
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingredients_quantity',
+        verbose_name='Рецепт',
+    )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
