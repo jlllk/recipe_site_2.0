@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 
-from .models import User
+from .models import User, Follow
 
 
 class UserAdmin(BaseUserAdmin):
@@ -20,5 +20,12 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('username',)
 
 
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'following')
+    search_fields = ('user', 'following')
+    empty_value_display = '-пусто-'
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Follow, FollowAdmin)
 admin.site.unregister(Group)
