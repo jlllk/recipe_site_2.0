@@ -58,7 +58,7 @@ class Ingredient(models.Model):
     """
     Модель описывает ингредиенты для рецепта.
     """
-    name = models.CharField(
+    title = models.CharField(
         blank=False,
         max_length=120,
         verbose_name='Ингредиент',
@@ -94,7 +94,8 @@ class RecipeIngredient(models.Model):
         verbose_name='Ингредиент',
     )
     quantity = models.SmallIntegerField(
-        blank=False,
+        null=True,
+        blank=True,
         default=0,
         verbose_name='Количество',
     )
