@@ -63,7 +63,7 @@ class Ingredient(models.Model):
         max_length=120,
         verbose_name='Ингредиент',
     )
-    unit = models.CharField(
+    dimension = models.CharField(
         blank=False,
         max_length=10,
         verbose_name='Единицы измерения',

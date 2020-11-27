@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load user_filters %}
+{% load static %}
 
 {% block title %}
     {% if object %}
@@ -59,12 +60,12 @@
                         {% if object %}
                             {% for item in object.ingredients.all %}
 
-                                <div class="form__field-item-ingredient" id="{{ item.id }}">
-                                    <span> {{ item.ingredient }} {{ item.quantity }} {{ item.ingredient.unit }}.</span>
+                                <div class="form__field-item-ingredient" id="ing_{{ item.id }}">
+                                    <span> {{ item.ingredient }} {{ item.quantity }} {{ item.ingredient.dimension }}.</span>
                                     <span class="form__field-item-delete"></span>
-                                    <input id="nameIngredient_{{ item.id }}" name="nameIngredient_{{ item.id }}" type="hidden" value="{{ item.ingredient }}">
-                                    <input id="valueIngredient_{{ item.id }}" name="valueIngredient_{{ item.id }}" type="hidden" value="{{ item.quantity }}">
-                                    <input id="unitsIngredient_{{ item.id }}" name="unitsIngredient_{{ item.id }}" type="hidden" value="{{ item.ingredient.unit }}.">
+                                    <input id="nameIngredient_" name="nameIngredient_" type="hidden" value="{{ item.ingredient }}">
+                                    <input id="valueIngredient_" name="valueIngredient_" type="hidden" value="{{ item.quantity }}">
+                                    <input id="unitsIngredient_" name="unitsIngredient_" type="hidden" value="{{ item.ingredient.unit }}.">
                                 </div>
 
                             {% endfor %}
@@ -107,3 +108,5 @@
     </div>
 
 {% endblock %}
+
+{% block scripts %}<script src="{% static 'js/formRecipe.js' %}"></script>{% endblock %}
