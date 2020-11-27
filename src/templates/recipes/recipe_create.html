@@ -56,7 +56,20 @@
                         <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
                     </div>
                     <div class="form__field-group-ingredientes-container">
+                        {% if object %}
+                            {% for item in object.ingredients.all %}
 
+                                <div class="form__field-item-ingredient" id="{{ item.id }}">
+                                    <span> {{ item.ingredient }} {{ item.quantity }} {{ item.ingredient.unit }}.</span>
+                                    <span class="form__field-item-delete"></span>
+                                    <input id="nameIngredient_{{ item.id }}" name="nameIngredient_{{ item.id }}" type="hidden" value="{{ item.ingredient }}">
+                                    <input id="valueIngredient_{{ item.id }}" name="valueIngredient_{{ item.id }}" type="hidden" value="{{ item.quantity }}">
+                                    <input id="unitsIngredient_{{ item.id }}" name="unitsIngredient_{{ item.id }}" type="hidden" value="{{ item.ingredient.unit }}.">
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
                     </div>
                     <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
                     <span class="form__error"></span>
