@@ -35,13 +35,13 @@ class Recipe(models.Model):
         blank=False,
         verbose_name='Описание'
     )
-    tag = models.ManyToManyField(Tag, blank=False)
+    tag = models.ManyToManyField(Tag, blank=False, related_name='recipes')
     cooking_time = models.SmallIntegerField(
         blank=False,
         verbose_name='Время приготовления',
     )
     pub_date = models.DateTimeField(
-        auto_now=True,
+        auto_now_add=True,
         verbose_name='Дата публикации'
     )
 

@@ -26,6 +26,16 @@ class HomePageView(ListView):
     model = Recipe
     paginate_by = 20
 
+    def get_queryset(self):
+        """
+        Фильтруем данные в зависимости от набора переданных в урл тэгов.
+        """
+        qs = super().get_queryset()
+        tags = self.request.GET.get('tag', None)
+        if tags is not None:
+            qs = qs.filter(tag__title__in=tags.split(','))
+        return qs
+
 
 class RecipeDetailView(DetailView):
     model = Recipe
