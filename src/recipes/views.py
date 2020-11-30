@@ -6,7 +6,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, FileResponse
+from django.db.models import Sum, Count
 
 from .models import (
     Recipe,
@@ -16,6 +17,7 @@ from .models import (
     RecipeIngredient,
 )
 from .forms import RecipeCreationModelForm
+from .utilites import buffered_shopping_list
 
 User = get_user_model()
 
@@ -147,3 +149,26 @@ class ShoppingListView(LoginRequiredMixin, View):
             'recipes/recipe_shop_list.html',
             context=context,
         )
+
+
+def get_shopping_list(request):
+    """
+    View генерирует списко ингредиентов в формате pdf на основе рецептов,
+    добавленных в список покупок. Повторяющиеся ингредиенты суммируются.
+    """
+    recipe_ids = ShoppingList.objects.filter(user=request.user)\
+        .values_list('recipe', flat=True)
+
+    ingredients_sum = RecipeIngredient.objects\
+        .filter(recipe_id__in=recipe_ids)\
+        .values('ingredient__title', 'ingredient__dimension')\
+        .annotate(ingredient_sum=Sum('quantity'))\
+        .order_by('ingredient__title')
+
+    buffered_list = buffered_shopping_list(ingredients_sum)
+
+    return FileResponse(
+        buffered_list,
+        as_attachment=True,
+        filename='shopping_list.pdf',
+    )
