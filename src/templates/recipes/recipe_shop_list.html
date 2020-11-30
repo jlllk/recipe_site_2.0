@@ -21,6 +21,7 @@
                         <h3 class="recipe__title">{{ item.recipe.title }}</h3>
                         <p class="recipe__text"><span class="icon-time"></span> {{ item.recipe.cooking_time }} мин.</p>
                     </div>
+                    {% csrf_token %}
                     <a href="#" class="shopping-list__button link">Удалить</a>
                 </li>
             {% endfor %}
@@ -29,3 +30,5 @@
     </div>
 
 {% endblock %}
+
+{% block scripts %}<script src="{% static 'js/shopList.js' %}"></script>{% endblock %}

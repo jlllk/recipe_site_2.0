@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from recipes.models import Ingredient, RecipeFavorite
+from recipes.models import Ingredient, RecipeFavorite, ShoppingList
 from users.models import Follow
 
 
@@ -19,6 +19,16 @@ class RecipeFavoriteSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
     class Meta:
         fields = ('id',)
         model = Follow
+
+
+class ShoppingListSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        fields = ('id',)
+        model = ShoppingList

@@ -3,13 +3,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters, mixins, status, generics
 from rest_framework.response import Response
 
-from recipes.models import Ingredient, Recipe, RecipeFavorite
+from recipes.models import Ingredient, Recipe, RecipeFavorite, ShoppingList
 from users.models import Follow, User
 
 from .serializers import (
     IngredientSerializer,
     RecipeFavoriteSerializer,
     FollowSerializer,
+    ShoppingListSerializer,
 )
 
 
@@ -73,14 +74,14 @@ class FollowCreateAPIView(generics.CreateAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
 
-    # def create(self, request, *args, **kwargs):
-    #     """
-    #     Переопределяем метод, чтобы вернуть сообщение {'success': True}.
-    #     """
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     return Response(data={'success': True}, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        """
+        Переопределяем метод, чтобы вернуть сообщение {'success': True}.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(data={'success': True}, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         """
@@ -109,7 +110,7 @@ class FollowCreateAPIView(generics.CreateAPIView):
 
 class FollowDeleteAPIView(generics.DestroyAPIView):
     """
-    APIView удаляет рецепты пользователей из списка избранного.
+    APIView удаляет подписку на автора.
     """
     def get_object(self, pk):
         return get_object_or_404(Follow, pk=pk)
@@ -122,4 +123,54 @@ class FollowDeleteAPIView(generics.DestroyAPIView):
             following=following,
         )
         follow.delete()
+        return Response({'success': True})
+
+
+class ShoppingListCreateAPIView(generics.CreateAPIView):
+    queryset = ShoppingList.objects.all()
+    serializer_class = ShoppingListSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Переопределяем метод, чтобы вернуть сообщение {'success': True}.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(data={'success': True}, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        """
+        Метод добавляет рецепт в список покупок. В процессе полю user
+        присваивается текущий пользователь.
+        Если рецепт уже в списке покупок, то вернуть {'success': True}.
+        """
+        recipe_id = self.request.data.get('id')
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+
+        recipe_exist = ShoppingList.objects.filter(
+            user=self.request.user,
+            recipe=recipe,
+        )
+        if recipe_exist:
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
+
+        serializer.save(user=self.request.user, recipe=recipe)
+
+
+class ShoppingListDeleteAPIView(generics.DestroyAPIView):
+    """
+    APIView удаляет рецепты из списка покупок.
+    """
+    def get_object(self, pk):
+        return get_object_or_404(Recipe, pk=pk)
+
+    def delete(self, request, pk, **kwargs):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe_in_shopping_list = get_object_or_404(
+            ShoppingList,
+            user=request.user,
+            recipe=recipe,
+        )
+        recipe_in_shopping_list.delete()
         return Response({'success': True})
