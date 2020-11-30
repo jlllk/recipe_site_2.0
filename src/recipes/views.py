@@ -51,20 +51,18 @@ class RecipeCreateView(CreateView):
         response = super().form_valid(form)
 
         known_ids = []
-        """
-        Собираем id полей формы с ингридиентами, которые не относятся к
-        RecipeCreationModelForm.
-        """
+
+        # Собираем id полей формы с ингридиентами, которые не относятся к
+        # RecipeCreationModelForm.
         for items in form.data.keys():
             if 'nameIngredient' in items:
                 name, id = items.split('_')
                 known_ids.append(id)
 
         for id in known_ids:
-            """
-            Создаем экземпляры классов Ingredient и RecipeIngredient на
-            основе данных из формы, используя собранные ранее id в known_ids.
-            """
+
+            # Создаем экземпляры классов Ingredient и RecipeIngredient на
+            # основе данных из формы, используя собранные ранее id в known_ids.
             ingredient, created = Ingredient.objects.get_or_create(
                 title=form.data.get(f'nameIngredient_{id}'),
                 dimension=form.data.get(f'unitsIngredient_{id}')
@@ -89,10 +87,8 @@ class RecipeUpdateView(UpdateView):
         response = super().form_valid(form)
 
         known_ids = []
-        """
-        Собираем id полей формы с ингридиентами, которые не относятся к
-        RecipeCreationModelForm.
-        """
+        # Собираем id полей формы с ингридиентами, которые не относятся к
+        # RecipeCreationModelForm.
         for items in form.data.keys():
             if 'nameIngredient' in items:
                 name, id = items.split('_')
@@ -100,11 +96,10 @@ class RecipeUpdateView(UpdateView):
 
         updated_ingredients = []
         for id in known_ids:
-            """
-            Создаем или получаем экземпляры классов Ingredient и
-            RecipeIngredient на основе данных из формы, используя собранные
-            ранее id в known_ids.
-            """
+
+            # Создаем или получаем экземпляры классов Ingredient и
+            # RecipeIngredient на основе данных из формы, используя собранные
+            # ранее id в known_ids.
             ingredient, created = Ingredient.objects.get_or_create(
                 title=form.data.get(f'nameIngredient_{id}'),
                 dimension=form.data.get(f'unitsIngredient_{id}')
@@ -117,11 +112,10 @@ class RecipeUpdateView(UpdateView):
             updated_ingredients.append(rec_ingredient)
 
         all_ingredints = RecipeIngredient.objects.filter(recipe=self.object)
-        """
-        Удаляем из базы ингридиенты, которые не оказались в списке
-        updated_ingredients, т.е. пользователь удалил их в форме при
-        редактировании рецепта.
-        """
+
+        # Удаляем из базы ингридиенты, которые не оказались в списке
+        # updated_ingredients, т.е. пользователь удалил их в форме при
+        # редактировании рецепта.
         for ingredient in all_ingredints:
             if ingredient not in updated_ingredients:
                 ingredient.delete()
@@ -140,11 +134,33 @@ class RecipeAuthorPageView(DetailView):
     model = User
     template_name = 'recipes/recipe_author_detail.html'
 
+    def get_context_data(self, **kwargs):
+        """
+        Добавляем в контекст страницы все рецепты автора отфильтрованные
+        по переданным тегам, если они переданы в запросе.
+        """
+        context = super().get_context_data(**kwargs)
+        author_recipes = Recipe.objects.filter(author=self.object)
+        tags = self.request.GET.get('tag', None)
+        if tags is not None:
+            author_recipes = author_recipes.filter(
+                tag__title__in=tags.split(','),
+            )
+        context['recipes'] = author_recipes
+        return context
+
 
 class RecipeFavoriteView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
+        """
+        Возвращаем либо весь список избранного, либо отфильтрованные по тегам,
+        если они переданы в запросе.
+        """
         favorite = RecipeFavorite.objects.filter(user=request.user)
+        tags = self.request.GET.get('tag', None)
+        if tags is not None:
+            favorite = favorite.filter(recipe__tag__title__in=tags.split(','))
         context = {'favorite': favorite}
         return render(request, 'recipes/recipe_favorite.html', context=context)
 

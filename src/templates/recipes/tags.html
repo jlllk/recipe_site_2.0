@@ -3,7 +3,7 @@
 <ul class="tags">
     {% for tag in tags %}
     <li class="tags__item">
-        <a class="tags__checkbox {% set_checkbox_style tag.title %} {% active_checkbox request tag.title %}" href="{% url 'home_page' %}?{% add_query_params request tag.title %}"></a>
+        <a class="tags__checkbox {% set_checkbox_style tag.title %} {% active_checkbox request tag.title %}" href="{{ request.path }}?{% add_query_params request tag.title %}"></a>
         <label class="tags__label">{{ tag.title }}</label>
     </li>
     {% endfor %}
