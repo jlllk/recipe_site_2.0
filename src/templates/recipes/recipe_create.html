@@ -35,10 +35,10 @@
                 <p class="form__label">Теги</p>
                 <div class="form__field-group">
                     <div class="tags">
-                        {% for tag in form.tag %}
+                        {% for choice in form.tag %}
                              <div class="tags__item">
-                                {{ tag.tag }}
-                                <label for="id_breakfast" class="tags__label">{{ tag.choice_label }}</label>
+                                {{ choice.tag }}
+                                <label for="id_breakfast" class="tags__label">{{ choice.choice_label }}</label>
                             </div>
                         {% endfor %}
                     </div>

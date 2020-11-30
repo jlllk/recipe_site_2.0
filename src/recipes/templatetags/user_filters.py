@@ -10,4 +10,9 @@ def addclass(field, css):
 
 @register.filter
 def addcheckboxclass(field, tag):
-    return field.as_widget(attrs={"class": css})
+    tags_styles = {
+        'Завтра': 'tags__checkbox_style_orange',
+        'Обед': 'tags__checkbox_style_green',
+        'Ужин': 'tags__checkbox_style_purple',
+    }
+    return field.as_widget(attrs={"class": tags_styles[tag]})

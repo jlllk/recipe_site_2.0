@@ -22,7 +22,7 @@ User = get_user_model()
 
 class HomePageView(ListView):
     model = Recipe
-    paginate_by = 8
+    paginate_by = 20
 
 
 class RecipeDetailView(DetailView):
