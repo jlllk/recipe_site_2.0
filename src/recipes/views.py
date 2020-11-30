@@ -17,7 +17,7 @@ from .models import (
     RecipeIngredient,
 )
 from .forms import RecipeCreationModelForm
-from .utilites import buffered_shopping_list
+from .utilities import buffered_shopping_list
 
 User = get_user_model()
 
