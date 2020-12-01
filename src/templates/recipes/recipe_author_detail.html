@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Страница автора | {{ object.username }} {% endblock %}
 
@@ -9,11 +10,13 @@
             {% include 'recipes/tags.html' %}
         </div>
 
-        <div class="author-subscribe" data-author="{{ object.id }}">
-            <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
-        </div>
+        {% if request.user != object %}
+            <div class="author-subscribe" data-author="{{ object.id }}">
+                <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
+            </div>
+        {% endif %}
         <div class="card-list" >
-        {% for recipe in recipes %}
+        {% for recipe in object_list %}
             <div class="card" data-id="{{ recipe.id }}">
                 <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="link"><img src="{{ recipe.image.url }}" alt="Какой-то текст" class="card__image"></a>
                 <div class="card__body">
@@ -27,23 +30,19 @@
                     </div>
                 </div>
                 <div class="card__footer">
-                    <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-                    <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
+                    {% csrf_token %}
+                    {% if request.user.is_authenticated %}
+                        {% include 'recipes/shopping_list_button.html' with user=request.user recipe=recipe %}
+                        {% include 'recipes/favorite_button.html' with user=request.user recipe=recipe %}
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
 
     </div>
-        <nav class="pagination" aria-label="Search results pages">
-            <ul class="pagination__container">
-                <li class="pagination__item"><a class="pagination__link link" href="#"><span class="icon-left"></span></a></li>
-                <li class="pagination__item pagination__item_active"><a class="pagination__link link" href="#">1</a></li>
-                <li class="pagination__item"><a class="pagination__link link" href="#">2</a></li>
-                <li class="pagination__item"><a class="pagination__link link" href="#">3</a></li>
-                <li class="pagination__item"><a class="pagination__link link" href="#">4</a></li>
-                <li class="pagination__item"><a class="pagination__link link" href="#">5</a></li>
-                <li class="pagination__item"><a class="pagination__link link" href="#"><span class="icon-right"></span></a></li>
-            </ul>
-        </nav>
+
+    {% include 'recipes/paginator.html' %}
 
 {% endblock %}
+
+{% block scripts %}<script src="{% static 'js/authorRecipe.js' %}"></script>{% endblock %}

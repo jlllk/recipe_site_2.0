@@ -3,11 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
+from django.views.generic.list import ListView, MultipleObjectMixin
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect, FileResponse
 from django.db.models import Sum, Count
+from django.conf import settings
 
 from .models import (
     Recipe,
@@ -24,7 +25,7 @@ User = get_user_model()
 
 class HomePageView(ListView):
     model = Recipe
-    paginate_by = 6
+    paginate_by = settings.PAGINATE_BY
 
     def get_queryset(self):
         """
@@ -130,8 +131,9 @@ class RecipeDeleteView(DeleteView):
     success_url = reverse_lazy('home_page')
 
 
-class RecipeAuthorPageView(DetailView):
+class RecipeAuthorPageView(DetailView, MultipleObjectMixin):
     model = User
+    paginate_by = settings.PAGINATE_BY
     template_name = 'recipes/recipe_author_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -139,20 +141,22 @@ class RecipeAuthorPageView(DetailView):
         Добавляем в контекст страницы все рецепты автора отфильтрованные
         по переданным тегам, если они переданы в запросе.
         """
-        context = super().get_context_data(**kwargs)
-        author_recipes = Recipe.objects.filter(author=self.object)
+        author_recipes = self.object.recipes.all()
         tags = self.request.GET.get('tag', None)
         if tags is not None:
             author_recipes = author_recipes.filter(
                 tag__title__in=tags.split(','),
             )
-        context['recipes'] = author_recipes
+        context = super().get_context_data(
+            object_list=author_recipes,
+            **kwargs,
+        )
         return context
 
 
 class RecipeFavoriteView(LoginRequiredMixin, ListView):
     model = RecipeFavorite
-    paginate_by = 6
+    paginate_by = settings.PAGINATE_BY
     context_object_name = 'favorite'
     template_name = 'recipes/recipe_favorite.html'
 
