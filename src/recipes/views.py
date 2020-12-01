@@ -24,7 +24,7 @@ User = get_user_model()
 
 class HomePageView(ListView):
     model = Recipe
-    paginate_by = 20
+    paginate_by = 6
 
     def get_queryset(self):
         """
@@ -150,19 +150,23 @@ class RecipeAuthorPageView(DetailView):
         return context
 
 
-class RecipeFavoriteView(LoginRequiredMixin, View):
+class RecipeFavoriteView(LoginRequiredMixin, ListView):
+    model = RecipeFavorite
+    paginate_by = 6
+    context_object_name = 'favorite'
+    template_name = 'recipes/recipe_favorite.html'
 
-    def get(self, request, *args, **kwargs):
+    def get_queryset(self):
         """
         Возвращаем либо весь список избранного, либо отфильтрованные по тегам,
         если они переданы в запросе.
         """
-        favorite = RecipeFavorite.objects.filter(user=request.user)
+        favorite = super().get_queryset()
+        favorite = favorite.filter(user=self.request.user)
         tags = self.request.GET.get('tag', None)
         if tags is not None:
             favorite = favorite.filter(recipe__tag__title__in=tags.split(','))
-        context = {'favorite': favorite}
-        return render(request, 'recipes/recipe_favorite.html', context=context)
+        return favorite
 
 
 class ShoppingListView(LoginRequiredMixin, View):

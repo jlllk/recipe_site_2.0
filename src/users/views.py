@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic.list import ListView
 from django.views.generic import CreateView
 
 
@@ -16,9 +17,17 @@ class SignUpView(CreateView):
     template_name = 'auth/registration.html'
 
 
-class UserFollowView(LoginRequiredMixin, View):
+class UserFollowView(LoginRequiredMixin, ListView):
+    model = Follow
+    paginate_by = 6
+    context_object_name = 'following'
+    template_name = 'users/user_follow.html'
 
-    def get(self, request, *args, **kwargs):
-        following = Follow.objects.filter(user=request.user)
-        context = {'following': following}
-        return render(request, 'users/user_follow.html', context=context)
+    def get_queryset(self):
+        """
+        Возвращаем подписки текущего пользователя.
+        """
+        following = super().get_queryset()
+        following = following.filter(user=self.request.user)
+        return following
+
