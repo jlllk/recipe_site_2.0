@@ -2,6 +2,7 @@ const container = document.querySelector('.card-list');
 const counterId = document.querySelector('#counter');
 const api = new Api(apiUrl);
 const header = new Header(counterId);
+
 const configButton = {
     purchases: {
         attr: 'data-out',
@@ -35,5 +36,3 @@ const cardList = new CardList(container, '.card', header, api, true, {
 });
 
 cardList.addEvent();
-
-

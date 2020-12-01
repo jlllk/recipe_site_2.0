@@ -1,5 +1,7 @@
 from django import template
 
+from recipes.models import RecipeFavorite, ShoppingList
+
 register = template.Library()
 
 
@@ -75,3 +77,17 @@ def relative_url(value, field_name, urlencode=None):
         encoded_querystring = '&'.join(filtered_querystring)
         url = '{}&{}'.format(url, encoded_querystring)
     return url
+
+
+@register.simple_tag
+def already_in_favorites(user, recipe):
+    recipe_exists = RecipeFavorite.objects.filter(user=user, recipe=recipe
+                                                  ).exists()
+    return recipe_exists
+
+
+@register.simple_tag
+def already_in_shopping_list(user, recipe):
+    recipe_exists = ShoppingList.objects.filter(user=user, recipe=recipe
+                                                ).exists()
+    return recipe_exists

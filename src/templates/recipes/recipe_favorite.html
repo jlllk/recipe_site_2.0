@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load user_filters %}
 
 {% block title %}Избранное{% endblock %}
 
@@ -13,7 +14,7 @@
         </div>
         <div class="card-list">
             {% for item in favorite %}
-                <div class="card" data-id="{{ item.recipe.if }}">
+                <div class="card" data-id="{{ item.recipe.id }}">
                     <a href="{% url 'recipe_detail' pk=item.recipe.pk %}" class="link"><img src="{{ item.recipe.image.url }}" alt="Какой-то текст" class="card__image"></a>
                     <div class="card__body">
                         <a class="card__title link" href="{% url 'recipe_detail' pk=item.recipe.pk %}">{{ item.recipe.title }}</a>
@@ -26,9 +27,9 @@
                         </div>
                     </div>
                     <div class="card__footer">
-                        <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
                         {% csrf_token %}
-                        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
+                        {% include 'recipes/shopping_list_button.html' with user=request.user recipe=item.recipe %}
+                        {% include 'recipes/favorite_button.html' with user=request.user recipe=item.recipe %}
                     </div>
                 </div>
             {% endfor %}
