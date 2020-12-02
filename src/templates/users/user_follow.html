@@ -13,7 +13,8 @@
     </div>
 
     <div class="card-list">
-        {% for user in following %}
+        {% csrf_token %}
+        {% for user in object_list %}
             <div class="card-user" data-author="{{ user.following.id }}">
                 <div class="card-user__header">
                     <h2 class="card-user__title">{{ user.following.username }}</h2>
@@ -25,7 +26,8 @@
                             <li class="card-user__item">
                                 <div class="recipe">
                                     <img src="{{ recipe.image.url }}" alt="какой-то-текст" class="recipe__image">
-                                    <h3 class="recipe__title">{{ recipe.title }}</h3>
+                                    <h3 class="recipe__title">
+                                        <a href="{% url 'recipe_detail' pk=recipe.pk %}">{{ recipe.title }}</a></h3>
                                     <p class="recipe__text"><span class="icon-time"></span>
                                         {{ recipe.cooking_time }} мин.</p>
                                 </div>
@@ -47,3 +49,5 @@
     {% include 'recipes/paginator.html' %}
 
 {% endblock %}
+
+{% block scripts %}<script src="{% static 'js/myFollow.js' %}"></script>{% endblock %}

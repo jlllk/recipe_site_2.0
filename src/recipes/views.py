@@ -139,7 +139,7 @@ class RecipeAuthorPageView(DetailView, MultipleObjectMixin):
     def get_context_data(self, **kwargs):
         """
         Добавляем в контекст страницы все рецепты автора отфильтрованные
-        по переданным тегам, если они переданы в запросе.
+        по тегам, если они переданы в запросе.
         """
         author_recipes = self.object.recipes.all()
         tags = self.request.GET.get('tag', None)

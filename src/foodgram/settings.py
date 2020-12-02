@@ -116,7 +116,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-PAGINATE_BY = 6
+PAGINATE_BY = 4
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

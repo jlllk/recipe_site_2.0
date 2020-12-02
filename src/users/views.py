@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
@@ -19,8 +20,7 @@ class SignUpView(CreateView):
 
 class UserFollowView(LoginRequiredMixin, ListView):
     model = Follow
-    paginate_by = 6
-    context_object_name = 'following'
+    paginate_by = settings.PAGINATE_BY
     template_name = 'users/user_follow.html'
 
     def get_queryset(self):
