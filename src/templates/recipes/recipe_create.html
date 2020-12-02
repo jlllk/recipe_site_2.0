@@ -38,7 +38,7 @@
                         {% for choice in form.tag %}
                              <div class="tags__item">
                                 {{ choice.tag }}
-                                <label for="id_breakfast" class="tags__label">{{ choice.choice_label }}</label>
+                                <label for="{{ choice.id_for_label }}" class="tags__label">{{ choice.choice_label }}</label>
                             </div>
                         {% endfor %}
                     </div>
