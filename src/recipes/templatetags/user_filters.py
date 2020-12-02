@@ -54,16 +54,6 @@ def active_checkbox(request, tag):
 
 
 @register.simple_tag
-def set_checkbox_style(tag):
-    styles = {
-        'Завтрак': 'tags__checkbox_style_orange',
-        'Обед': 'tags__checkbox_style_green',
-        'Ужин': 'tags__checkbox_style_purple'
-    }
-    return styles[tag]
-
-
-@register.simple_tag
 def relative_url(value, field_name, urlencode=None):
     """
     Тег генерирует урл с учетом уже имеющихся параметров GET запроса.
