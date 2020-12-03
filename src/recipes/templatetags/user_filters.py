@@ -21,6 +21,16 @@ def addcheckboxclass(field, tag):
 
 
 @register.simple_tag
+def set_checkbox_style(tag):
+    styles = {
+        'Завтрак': 'tags__checkbox_style_orange',
+        'Обед': 'tags__checkbox_style_green',
+        'Ужин': 'tags__checkbox_style_purple'
+    }
+    return styles[tag]
+
+
+@register.simple_tag
 def add_query_params(request, tag):
 
     get_dict = request.GET.copy()
