@@ -8,12 +8,12 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author', 'tag')
     list_filter = ('tag',)
     empty_value_display = '-пусто-'
-    readonly_fields = ('recipe_in_favorite',)
+    readonly_fields = ('recipe_in_favorites',)
 
-    def recipe_in_favorite(self, instance):
+    def recipe_in_favorites(self, instance):
         return instance.favorites.count()
 
-    recipe_in_favorite.short_description = 'Добавлено в избранное'
+    recipe_in_favorite.short_description = 'В избранном'
 
 
 class IngredientAdmin(admin.ModelAdmin):
