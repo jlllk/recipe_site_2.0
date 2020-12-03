@@ -41,7 +41,7 @@
                                 {% include 'recipes/shopping_list_button.html' with user=request.user recipe=object %}
                             </li>
                         {% if request.user != object.author %}
-                            <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+                            {% include 'recipes/subscribe_button.html' with user=request.user author=object.author %}
                         {% endif %}
                     {% endif %}
                 </ul>

@@ -1,6 +1,7 @@
 from django import template
 
 from recipes.models import RecipeFavorite, ShoppingList
+from users.models import Follow
 
 register = template.Library()
 
@@ -93,3 +94,9 @@ def already_in_shopping_list(user, recipe):
     recipe_exists = ShoppingList.objects.filter(user=user, recipe=recipe
                                                 ).exists()
     return recipe_exists
+
+
+@register.simple_tag
+def already_following(user, following):
+    following = Follow.objects.filter(user=user, following=following).exists()
+    return following

@@ -1,0 +1,9 @@
+{% load user_filters %}
+{% already_following user author as following %}
+
+{% if following %}
+    <button class="button button_style_light-blue button_size_subscribe button_style_blue" name="subscribe">Отписаться от автора</button>
+{% else %}
+    <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
+{% endif %}
+
