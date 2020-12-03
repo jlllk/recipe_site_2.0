@@ -24,6 +24,10 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    @property
+    def is_admin(self):
+        return self.role == UserRole.ADMIN
+
 
 class Follow(models.Model):
     """

@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView, MultipleObjectMixin
@@ -42,7 +42,7 @@ class RecipeDetailView(DetailView):
     model = Recipe
 
 
-class RecipeCreateView(CreateView):
+class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = Recipe
     form_class = RecipeCreationModelForm
     template_name = 'recipes/recipe_create.html'
@@ -79,10 +79,14 @@ class RecipeCreateView(CreateView):
         return reverse_lazy('recipe_detail', kwargs={'pk': self.object.pk})
 
 
-class RecipeUpdateView(UpdateView):
+class RecipeUpdateView(UserPassesTestMixin, UpdateView):
     model = Recipe
     form_class = RecipeCreationModelForm
     template_name = 'recipes/recipe_create.html'
+
+    def test_func(self):
+        recipe = self.get_object()
+        return self.request.user == recipe.author or self.request.user.is_admin
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -126,9 +130,16 @@ class RecipeUpdateView(UpdateView):
         return reverse_lazy('recipe_detail', kwargs={'pk': self.object.pk})
 
 
-class RecipeDeleteView(DeleteView):
+class RecipeDeleteView(UserPassesTestMixin, DeleteView):
+    """
+    Удалять рецепты могут администраторы и авторы.
+    """
     model = Recipe
     success_url = reverse_lazy('home_page')
+
+    def test_func(self):
+        recipe = self.get_object()
+        return self.request.user == recipe.author or self.request.user.is_admin
 
 
 class RecipeAuthorPageView(DetailView, MultipleObjectMixin):
@@ -190,14 +201,24 @@ def get_shopping_list(request):
     View генерирует списко ингредиентов в формате pdf на основе рецептов,
     добавленных в список покупок. Повторяющиеся ингредиенты суммируются.
     """
-    recipe_ids = ShoppingList.objects.filter(user=request.user)\
-        .values_list('recipe', flat=True)
+    if not request.user.is_authenticated:
+        return redirect('login')
 
-    ingredients_sum = RecipeIngredient.objects\
-        .filter(recipe_id__in=recipe_ids)\
-        .values('ingredient__title', 'ingredient__dimension')\
-        .annotate(ingredient_sum=Sum('quantity'))\
-        .order_by('ingredient__title')
+    recipe_ids = ShoppingList.objects.filter(
+        user=request.user,
+    ).values_list(
+        'recipe',
+        flat=True,
+    )
+
+    ingredients_sum = RecipeIngredient.objects.filter(
+        recipe_id__in=recipe_ids
+    ).values(
+        'ingredient__title',
+        'ingredient__dimension',
+    ).annotate(
+        ingredient_sum=Sum('quantity'),
+    ).order_by('ingredient__title')
 
     buffered_list = buffered_shopping_list(ingredients_sum)
 
