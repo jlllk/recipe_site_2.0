@@ -1,18 +1,17 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, filters, mixins, status, generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
 from recipes.models import Ingredient, Recipe, RecipeFavorite, ShoppingList
 from recipes.permissions import IsOwner
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from users.models import Follow, User
 
 from .serializers import (
+    FollowSerializer,
     IngredientSerializer,
     RecipeFavoriteSerializer,
-    FollowSerializer,
-    ShoppingListSerializer,
+    ShoppingListSerializer
 )
 
 

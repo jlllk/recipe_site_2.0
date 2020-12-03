@@ -1,12 +1,8 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic.list import ListView
 from django.views.generic import CreateView
-
+from django.views.generic.list import ListView
 
 from .forms import CreationForm
 from .models import Follow
@@ -30,4 +26,3 @@ class UserFollowView(LoginRequiredMixin, ListView):
         following = super().get_queryset()
         following = following.filter(user=self.request.user)
         return following
-

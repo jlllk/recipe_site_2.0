@@ -1,11 +1,12 @@
 from django.urls import path
 
-from .views import UserFollowView
 from recipes.views import (
-    RecipeFavoriteView,
-    ShoppingListView,
     RecipeAuthorPageView,
+    RecipeFavoriteView,
+    ShoppingListView
 )
+
+from .views import UserFollowView
 
 urlpatterns = [
     path('<int:pk>/', RecipeAuthorPageView.as_view(), name='recipe_author'),

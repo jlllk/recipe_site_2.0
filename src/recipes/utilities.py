@@ -1,12 +1,15 @@
 import io
 
-from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 
 
 def buffered_shopping_list(ingredients_sum):
+    """
+    Формируем список покупок в буффере.
+    """
     buffer = io.BytesIO()
     pdfmetrics.registerFont(TTFont('FreeSans', 'static/fonts/FreeSans.ttf'))
     p = canvas.Canvas(buffer)
@@ -18,7 +21,8 @@ def buffered_shopping_list(ingredients_sum):
     text_object.textLine('')
 
     for number, item in enumerate(ingredients_sum, start=1):
-        ingredient_string = (f"{number}. {item['ingredient__title'].capitalize()} - "
+        ingredient_string = (f"{number}. "
+                             f"{item['ingredient__title'].capitalize()} - "
                              f"{item['ingredient_sum']} "
                              f"{item['ingredient__dimension']}")
 

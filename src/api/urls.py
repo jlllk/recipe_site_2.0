@@ -1,15 +1,14 @@
-from django.urls import path, include
+from django.urls import path
 
 from .views import (
-    IngredientViewSet,
-    FavoriteDeleteAPIView,
     FavoriteCreateAPIView,
+    FavoriteDeleteAPIView,
     FollowCreateAPIView,
     FollowDeleteAPIView,
+    IngredientViewSet,
     ShoppingListCreateAPIView,
-    ShoppingListDeleteAPIView,
+    ShoppingListDeleteAPIView
 )
-
 
 urlpatterns = [
     path('v1/ingredients/', IngredientViewSet.as_view()),

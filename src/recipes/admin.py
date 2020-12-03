@@ -1,10 +1,17 @@
 from django.contrib import admin
 
-from .models import Recipe, Ingredient, RecipeIngredient, Tag, RecipeFavorite, ShoppingList
+from .models import (
+    Ingredient,
+    Recipe,
+    RecipeFavorite,
+    RecipeIngredient,
+    ShoppingList,
+    Tag
+)
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'recipe_in_favorite')
+    list_display = ('title', 'author', 'recipe_in_favorites')
     search_fields = ('title', 'author', 'tag')
     list_filter = ('tag',)
     empty_value_display = '-пусто-'
@@ -13,7 +20,7 @@ class RecipeAdmin(admin.ModelAdmin):
     def recipe_in_favorites(self, instance):
         return instance.favorites.count()
 
-    recipe_in_favorite.short_description = 'В избранном'
+    recipe_in_favorites.short_description = 'В избранном'
 
 
 class IngredientAdmin(admin.ModelAdmin):

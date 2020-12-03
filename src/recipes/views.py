@@ -1,23 +1,23 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, redirect
-from django.views import View
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView, MultipleObjectMixin
-from django.views.generic.detail import DetailView
+from django.db.models import Sum
+from django.http import FileResponse
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect, FileResponse
-from django.db.models import Sum, Count
-from django.conf import settings
+from django.views import View
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView, MultipleObjectMixin
 
+from .forms import RecipeCreationModelForm
 from .models import (
+    Ingredient,
     Recipe,
     RecipeFavorite,
-    ShoppingList,
-    Ingredient,
     RecipeIngredient,
+    ShoppingList
 )
-from .forms import RecipeCreationModelForm
 from .utilities import buffered_shopping_list
 
 User = get_user_model()
@@ -198,15 +198,13 @@ class ShoppingListView(LoginRequiredMixin, View):
 
 def get_shopping_list(request):
     """
-    View генерирует списко ингредиентов в формате pdf на основе рецептов,
+    View генерирует список ингредиентов в формате pdf на основе рецептов,
     добавленных в список покупок. Повторяющиеся ингредиенты суммируются.
     """
     if not request.user.is_authenticated:
         return redirect('login')
 
-    recipe_ids = ShoppingList.objects.filter(
-        user=request.user,
-    ).values_list(
+    recipe_ids = request.user.shopping_list.all().values_list(
         'recipe',
         flat=True,
     )
