@@ -38,7 +38,7 @@ class FavoriteDeleteAPIView(generics.DestroyAPIView):
     APIView удаляет рецепты пользователей из списка избранного. Только владелец
     может совершать эту операцию.
     """
-    permission_classes = (IsAuthenticated | IsOwner)
+    permission_classes = (IsAuthenticated | IsOwner,)
 
     def get_object(self, pk):
         return get_object_or_404(RecipeFavorite, pk=pk)
@@ -56,7 +56,7 @@ class FavoriteCreateAPIView(generics.CreateAPIView):
     """
     queryset = RecipeFavorite.objects.all()
     serializer_class = RecipeFavoriteSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -141,7 +141,7 @@ class FollowDeleteAPIView(generics.DestroyAPIView):
     APIView удаляет подписку на автора. Только владельцы могут удалять свои
     подписки.
     """
-    permission_classes = (IsAuthenticated | IsOwner)
+    permission_classes = (IsAuthenticated | IsOwner,)
 
     def get_object(self, pk):
         return get_object_or_404(Follow, pk=pk)
@@ -154,7 +154,7 @@ class FollowDeleteAPIView(generics.DestroyAPIView):
             following=following,
         )
         follow.delete()
-        return Response({'success': True}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'success': True})
 
 
 class ShoppingListCreateAPIView(generics.CreateAPIView):
@@ -164,7 +164,7 @@ class ShoppingListCreateAPIView(generics.CreateAPIView):
     """
     queryset = ShoppingList.objects.all()
     serializer_class = ShoppingListSerializer
-    permission_classes = (IsAuthenticated | IsOwner)
+    permission_classes = (IsAuthenticated | IsOwner,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -202,7 +202,7 @@ class ShoppingListDeleteAPIView(generics.DestroyAPIView):
     APIView удаляет рецепты из списка покупок. Только владельцы могут совершать
     это действие.
     """
-    permission_classes = (IsAuthenticated | IsOwner)
+    permission_classes = (IsAuthenticated | IsOwner,)
 
     def get_object(self, pk):
         return get_object_or_404(Recipe, pk=pk)
@@ -215,4 +215,4 @@ class ShoppingListDeleteAPIView(generics.DestroyAPIView):
             recipe=recipe,
         )
         recipe_in_shopping_list.delete()
-        return Response({'success': True}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'success': True})

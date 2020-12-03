@@ -6,36 +6,36 @@ from .models import Recipe, Ingredient, RecipeIngredient, Tag, RecipeFavorite, S
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('title', 'author')
     search_fields = ('title', 'author', 'tag')
-    list_filter = ('title', 'author', 'tag')
+    list_filter = ('tag',)
     empty_value_display = '-пусто-'
 
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('title', 'dimension')
-    search_fields = ('name',)
+    search_fields = ('title',)
     empty_value_display = '-пусто-'
 
 
 class IngredientQuantityAdmin(admin.ModelAdmin):
-    list_display = ('id', 'ingredient', 'quantity')
+    list_display = ('ingredient', 'quantity')
     search_fields = ('ingredient',)
     empty_value_display = '-пусто-'
 
 
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title')
+    list_display = ('title',)
     search_fields = ('title',)
     empty_value_display = '-пусто-'
 
 
 class RecipeFavoriteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'recipe')
+    list_display = ('user', 'recipe')
     search_fields = ('user', 'recipe')
     empty_value_display = '-пусто-'
 
 
 class ShoppingListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'recipe')
+    list_display = ('user', 'recipe')
     search_fields = ('user', 'recipe')
     empty_value_display = '-пусто-'
 

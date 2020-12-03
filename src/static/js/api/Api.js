@@ -68,7 +68,7 @@ class Api {
       })
   }
   removeSubscriptions (id) {
-    return fetch(`/api/v1/subscriptions/${id}/`, {
+    return fetch(`/api/v1/subscriptions/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
