@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load user_filters %}
 
 {% block title %}Мои подписки{% endblock %}
 {% block style %}
@@ -21,8 +22,7 @@
                 </div>
                 <div class="card-user__body">
                     <ul class="card-user__items">
-
-                        {% for recipe in user.following.recipes.all %}
+                        {% for recipe in user.following.recipes.all|slice:":4" %}
                             <li class="card-user__item">
                                 <div class="recipe">
                                     <img src="{{ recipe.image.url }}" alt="какой-то-текст" class="recipe__image">
@@ -33,9 +33,8 @@
                                 </div>
                             </li>
                         {% endfor %}
-
                         <li class="card-user__item">
-                            <a href="#" class="card-user__link link">Еще 7 рецептов...</a>
+                            <a href="{% url 'recipe_author' pk=user.pk %}" class="card-user__link link">Все рецепты автора</a>
                         </li>
                     </ul>
                 </div>

@@ -4,10 +4,16 @@ from .models import Recipe, Ingredient, RecipeIngredient, Tag, RecipeFavorite, S
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author')
+    list_display = ('title', 'author', 'recipe_in_favorite')
     search_fields = ('title', 'author', 'tag')
     list_filter = ('tag',)
     empty_value_display = '-пусто-'
+    readonly_fields = ('recipe_in_favorite',)
+
+    def recipe_in_favorite(self, instance):
+        return instance.favorites.count()
+
+    recipe_in_favorite.short_description = 'Добавлено в избранное'
 
 
 class IngredientAdmin(admin.ModelAdmin):
