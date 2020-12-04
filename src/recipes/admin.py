@@ -9,6 +9,9 @@ from .models import (
     Tag
 )
 
+class Ingredients(admin.TabularInline):
+    model = RecipeIngredient
+
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'recipe_in_favorites')
@@ -16,9 +19,13 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tag',)
     empty_value_display = '-пусто-'
     readonly_fields = ('recipe_in_favorites',)
+    inlines = (Ingredients, )
 
     def recipe_in_favorites(self, instance):
         return instance.favorites.count()
+
+    def ingredients(self, instance):
+        return instance.favorites.all()
 
     recipe_in_favorites.short_description = 'В избранном'
 
