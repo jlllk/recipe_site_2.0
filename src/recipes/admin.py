@@ -9,6 +9,7 @@ from .models import (
     Tag
 )
 
+
 class Ingredients(admin.TabularInline):
     model = RecipeIngredient
 
