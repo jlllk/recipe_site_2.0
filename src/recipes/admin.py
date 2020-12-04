@@ -24,9 +24,6 @@ class RecipeAdmin(admin.ModelAdmin):
     def recipe_in_favorites(self, instance):
         return instance.favorites.count()
 
-    def ingredients(self, instance):
-        return instance.favorites.all()
-
     recipe_in_favorites.short_description = 'В избранном'
 
 
