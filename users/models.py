@@ -27,28 +27,3 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == UserRole.ADMIN
-
-
-class Follow(models.Model):
-    """
-    Модель описывает подписки на авторов.
-    """
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='follower'
-    )
-    following = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='following'
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-        unique_together = ('user', 'following')
-        ordering = ['-id']
-
-    def __str__(self):
-        return f'Пользователь {self.user} подписан на {self.following}'

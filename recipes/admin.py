@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import (
+    Follow,
     Ingredient,
     Recipe,
     RecipeFavorite,
@@ -58,6 +59,13 @@ class ShoppingListAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'following')
+    search_fields = ('user', 'following')
+    empty_value_display = '-пусто-'
+
+
+admin.site.register(Follow, FollowAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(RecipeIngredient, IngredientQuantityAdmin)

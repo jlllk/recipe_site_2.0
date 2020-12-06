@@ -12,6 +12,7 @@ from django.views.generic.list import ListView, MultipleObjectMixin
 
 from .forms import RecipeCreationModelForm
 from .models import (
+    Follow,
     Ingredient,
     Recipe,
     RecipeFavorite,
@@ -194,6 +195,20 @@ class ShoppingListView(LoginRequiredMixin, View):
             'recipes/recipe_shop_list.html',
             context=context,
         )
+
+
+class UserFollowView(LoginRequiredMixin, ListView):
+    model = Follow
+    paginate_by = settings.PAGINATE_BY
+    template_name = 'users/user_follow.html'
+
+    def get_queryset(self):
+        """
+        Возвращаем подписки текущего пользователя.
+        """
+        following = super().get_queryset()
+        following = following.filter(user=self.request.user)
+        return following
 
 
 def get_shopping_list(request):

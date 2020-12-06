@@ -1,11 +1,17 @@
 from django.shortcuts import get_object_or_404
 
-from recipes.models import Ingredient, Recipe, RecipeFavorite, ShoppingList
+from recipes.models import (
+    Follow,
+    Ingredient,
+    Recipe,
+    RecipeFavorite,
+    ShoppingList
+)
 from recipes.permissions import IsOwner
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.models import Follow, User
+from users.models import User
 
 from .serializers import (
     FollowSerializer,
