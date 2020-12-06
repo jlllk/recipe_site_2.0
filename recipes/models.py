@@ -5,15 +5,29 @@ from django.db.models import Sum
 User = get_user_model()
 
 
+class TagColor(models.TextChoices):
+    DEFAULT = '---'
+    ORANGE = 'orange'
+    GREEN = 'green'
+    PURPLE = 'purple'
+
+
 class Tag(models.Model):
     """
     Теги для модели Recipe
     """
     title = models.CharField(max_length=100, blank=False, verbose_name='Тег')
+    color = models.CharField(
+        max_length=10,
+        choices=TagColor.choices,
+        default=TagColor.DEFAULT,
+        verbose_name='Цвет',
+    )
 
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+        ordering = ('id',)
 
     def __str__(self):
         return self.title
