@@ -9,7 +9,7 @@ from .views import (
     RecipeUpdateView,
     ShoppingListView,
     UserFollowView,
-    get_shopping_list
+    DownloadShoppingList,
 )
 
 urlpatterns = [
@@ -19,7 +19,7 @@ urlpatterns = [
     path('<int:pk>/delete/', RecipeDeleteView.as_view(), name='recipe_delete'),
     path(
         'ingredients/download/',
-        get_shopping_list,
+        DownloadShoppingList.as_view(),
         name='ingredients_download',
     ),
     path(

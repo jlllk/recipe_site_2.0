@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Sum
 
 User = get_user_model()
 
@@ -16,6 +17,11 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class RecipeQuerySet(models.QuerySet):
+    def filter_by_tags(self, tags):
+        return self.filter(tag__title__in=tags).distinct()
 
 
 class Recipe(models.Model):
@@ -43,6 +49,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         verbose_name='Дата публикации'
     )
+    objects = RecipeQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -76,6 +83,18 @@ class Ingredient(models.Model):
         return self.title
 
 
+class RecipeIngredientQuerySet(models.QuerySet):
+    def ingredients_sum(self, ids_list):
+        return self.filter(
+            recipe_id__in=ids_list
+        ).values(
+            'ingredient__title',
+            'ingredient__dimension',
+        ).annotate(
+            ingredient_sum=Sum('quantity'),
+        ).order_by('ingredient__title')
+
+
 class RecipeIngredient(models.Model):
     """
     Модель описывает количество ингредиентов для рецепта.
@@ -98,6 +117,7 @@ class RecipeIngredient(models.Model):
         default=0,
         verbose_name='Количество',
     )
+    objects = RecipeIngredientQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Количество ингредиента'
@@ -105,6 +125,11 @@ class RecipeIngredient(models.Model):
 
     def __str__(self):
         return self.ingredient.title
+
+
+class RecipeFavoriteQuerySet(models.QuerySet):
+    def filter_by_tags(self, tags):
+        return self.filter(recipe__tag__title__in=tags).distinct()
 
 
 class RecipeFavorite(models.Model):
@@ -124,6 +149,8 @@ class RecipeFavorite(models.Model):
         verbose_name='Рецепт',
     )
 
+    objects = RecipeFavoriteQuerySet.as_manager()
+
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
@@ -131,6 +158,11 @@ class RecipeFavorite(models.Model):
 
     def __str__(self):
         return f'Пользователь {self.user} добавил в избранное {self.recipe}'
+
+
+class ShoppingListQuerySet(models.QuerySet):
+    def get_ids_flat(self):
+        return self.values_list('recipe', flat=True)
 
 
 class ShoppingList(models.Model):
@@ -149,6 +181,8 @@ class ShoppingList(models.Model):
         related_name='shopping_list',
         verbose_name='Рецепт',
     )
+
+    objects = ShoppingListQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Список покупок'

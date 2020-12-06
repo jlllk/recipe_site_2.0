@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -43,6 +42,44 @@ class RecipeDetailView(DetailView):
     model = Recipe
 
 
+def create_ingredients(form, recipe):
+    known_ids = []
+
+    # Собираем id полей формы с ингридиентами, которые не относятся к
+    # RecipeCreationModelForm.
+    for items in form.data.keys():
+        if 'nameIngredient' in items:
+            name, id = items.split('_')
+            known_ids.append(id)
+
+    ingredients_list = []
+    for id in known_ids:
+        # Создаем экземпляры классов Ingredient и RecipeIngredient на
+        # основе данных из формы, используя собранные ранее id в known_ids.
+        ingredient, created = Ingredient.objects.get_or_create(
+            title=form.data.get(f'nameIngredient_{id}'),
+            dimension=form.data.get(f'unitsIngredient_{id}')
+        )
+        rec_ingredient, created = RecipeIngredient.objects.get_or_create(
+            recipe=recipe,
+            ingredient=ingredient,
+            quantity=form.data.get(f'valueIngredient_{id}')
+        )
+        ingredients_list.append(rec_ingredient)
+
+    return ingredients_list
+
+
+def update_list_of_ingredients(updated_ingredients, recipe):
+    all_ingredients = RecipeIngredient.objects.filter(recipe=recipe)
+    # Удаляем из базы ингридиенты, которые не оказались в списке
+    # updated_ingredients, т.е. пользователь удалил их в форме при
+    # редактировании рецепта.
+    for ingredient in all_ingredients:
+        if ingredient not in updated_ingredients:
+            ingredient.delete()
+
+
 class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = Recipe
     form_class = RecipeCreationModelForm
@@ -51,29 +88,7 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         response = super().form_valid(form)
-
-        known_ids = []
-
-        # Собираем id полей формы с ингридиентами, которые не относятся к
-        # RecipeCreationModelForm.
-        for items in form.data.keys():
-            if 'nameIngredient' in items:
-                name, id = items.split('_')
-                known_ids.append(id)
-
-        for id in known_ids:
-
-            # Создаем экземпляры классов Ingredient и RecipeIngredient на
-            # основе данных из формы, используя собранные ранее id в known_ids.
-            ingredient, created = Ingredient.objects.get_or_create(
-                title=form.data.get(f'nameIngredient_{id}'),
-                dimension=form.data.get(f'unitsIngredient_{id}')
-            )
-            RecipeIngredient.objects.create(
-                recipe=self.object,
-                ingredient=ingredient,
-                quantity=form.data.get(f'valueIngredient_{id}')
-            )
+        createe_ingredients(form=form, recipe=self.object)
         return response
 
     def get_success_url(self):
@@ -91,40 +106,8 @@ class RecipeUpdateView(UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-
-        known_ids = []
-        # Собираем id полей формы с ингридиентами, которые не относятся к
-        # RecipeCreationModelForm.
-        for items in form.data.keys():
-            if 'nameIngredient' in items:
-                name, id = items.split('_')
-                known_ids.append(id)
-
-        updated_ingredients = []
-        for id in known_ids:
-
-            # Создаем или получаем экземпляры классов Ingredient и
-            # RecipeIngredient на основе данных из формы, используя собранные
-            # ранее id в known_ids.
-            ingredient, created = Ingredient.objects.get_or_create(
-                title=form.data.get(f'nameIngredient_{id}'),
-                dimension=form.data.get(f'unitsIngredient_{id}')
-            )
-            rec_ingredient, created = RecipeIngredient.objects.get_or_create(
-                recipe=self.object,
-                ingredient=ingredient,
-                quantity=form.data.get(f'valueIngredient_{id}')
-            )
-            updated_ingredients.append(rec_ingredient)
-
-        all_ingredints = RecipeIngredient.objects.filter(recipe=self.object)
-
-        # Удаляем из базы ингридиенты, которые не оказались в списке
-        # updated_ingredients, т.е. пользователь удалил их в форме при
-        # редактировании рецепта.
-        for ingredient in all_ingredints:
-            if ingredient not in updated_ingredients:
-                ingredient.delete()
+        ingredients_list = create_ingredients(form=form, recipe=self.object)
+        update_list_of_ingredients(ingredients_list, recipe=self.object)
         return response
 
     def get_success_url(self):
@@ -156,9 +139,7 @@ class RecipeAuthorPageView(DetailView, MultipleObjectMixin):
         author_recipes = self.object.recipes.all()
         tags = self.request.GET.get('tag', None)
         if tags is not None:
-            author_recipes = author_recipes.filter(
-                tag__title__in=tags.split(','),
-            )
+            author_recipes = author_recipes.filter_by_tags(tags.split(','))
         context = super().get_context_data(
             object_list=author_recipes,
             **kwargs,
@@ -181,7 +162,7 @@ class RecipeFavoriteView(LoginRequiredMixin, ListView):
         favorite = favorite.filter(user=self.request.user)
         tags = self.request.GET.get('tag', None)
         if tags is not None:
-            favorite = favorite.filter(recipe__tag__title__in=tags.split(','))
+            favorite = favorite.filter_by_tags(tags.split(','))
         return favorite
 
 
@@ -211,35 +192,24 @@ class UserFollowView(LoginRequiredMixin, ListView):
         return following
 
 
-def get_shopping_list(request):
+class DownloadShoppingList(View):
     """
     View генерирует список ингредиентов в формате pdf на основе рецептов,
     добавленных в список покупок. Повторяющиеся ингредиенты суммируются.
     """
-    if not request.user.is_authenticated:
-        return redirect('login')
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
 
-    recipe_ids = request.user.shopping_list.all().values_list(
-        'recipe',
-        flat=True,
-    )
+        recipe_ids = request.user.shopping_list.get_ids_flat()
+        ingredients_sum = RecipeIngredient.objects.ingredients_sum(recipe_ids)
+        buffered_list = buffered_shopping_list(ingredients_sum)
 
-    ingredients_sum = RecipeIngredient.objects.filter(
-        recipe_id__in=recipe_ids
-    ).values(
-        'ingredient__title',
-        'ingredient__dimension',
-    ).annotate(
-        ingredient_sum=Sum('quantity'),
-    ).order_by('ingredient__title')
-
-    buffered_list = buffered_shopping_list(ingredients_sum)
-
-    return FileResponse(
-        buffered_list,
-        as_attachment=True,
-        filename='shopping_list.pdf',
-    )
+        return FileResponse(
+            buffered_list,
+            as_attachment=True,
+            filename='shopping_list.pdf',
+        )
 
 
 def page_not_found(request, exception):
