@@ -34,7 +34,7 @@ class HomePageView(ListView):
         qs = super().get_queryset()
         tags = self.request.GET.get('tag', None)
         if tags is not None:
-            qs = qs.filter(tag__title__in=tags.split(','))
+            qs = qs.filter_by_tags(tags.split(','))
         return qs
 
 
