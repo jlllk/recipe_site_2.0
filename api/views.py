@@ -5,7 +5,7 @@ from recipes.models import (
     Ingredient,
     Recipe,
     RecipeFavorite,
-    ShoppingList
+    ShoppingList,
 )
 from recipes.permissions import IsOwner
 from rest_framework import generics, status
@@ -45,11 +45,11 @@ class FavoriteDeleteAPIView(generics.DestroyAPIView):
     """
     permission_classes = (IsAuthenticated | IsOwner,)
 
-    def get_object(self, pk):
-        return get_object_or_404(RecipeFavorite, pk=pk)
-
     def delete(self, request, pk, **kwargs):
-        favorite = self.get_object(pk)
+        try:
+            favorite = RecipeFavorite.objects.get(pk=pk)
+        except self.queryset.model.DoesNotExist:
+            return Response({'success': False})
         favorite.delete()
         return Response({'success': True})
 
@@ -68,9 +68,10 @@ class FavoriteCreateAPIView(generics.CreateAPIView):
         Переопределяем метод, чтобы вернуть сообщение {'success': True}.
         """
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(data={'success': True}, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
+        return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         """
@@ -86,10 +87,7 @@ class FavoriteCreateAPIView(generics.CreateAPIView):
             recipe=recipe,
         )
         if favorite_recipe_exist:
-            return Response(
-                {'message': 'Рецепт уже добавлен в список избранного!'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
 
         serializer.save(user=self.request.user, recipe=recipe)
 
@@ -108,9 +106,10 @@ class FollowCreateAPIView(generics.CreateAPIView):
         Переопределяем метод, чтобы вернуть сообщение {'success': True}.
         """
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(data={'success': True}, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
+        return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         """
@@ -133,10 +132,7 @@ class FollowCreateAPIView(generics.CreateAPIView):
             following=following,
         )
         if subscription_exist:
-            return Response(
-                {'message': 'Вы уде подписаны на этого автора!'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
 
         serializer.save(user=self.request.user, following=following)
 
@@ -148,16 +144,13 @@ class FollowDeleteAPIView(generics.DestroyAPIView):
     """
     permission_classes = (IsAuthenticated | IsOwner,)
 
-    def get_object(self, pk):
-        return get_object_or_404(Follow, pk=pk)
-
     def delete(self, request, pk, **kwargs):
         following = get_object_or_404(User, pk=pk)
-        follow = get_object_or_404(
-            Follow,
-            user=request.user,
-            following=following,
-        )
+        try:
+            follow = Follow.objects.get(user=request.user, following=following)
+        except Follow.DoesNotExist:
+            return Response({'success': False})
+
         follow.delete()
         return Response({'success': True})
 
@@ -176,9 +169,10 @@ class ShoppingListCreateAPIView(generics.CreateAPIView):
         Переопределяем метод, чтобы вернуть сообщение {'success': True}.
         """
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(data={'success': True}, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
+        return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         """
@@ -194,10 +188,7 @@ class ShoppingListCreateAPIView(generics.CreateAPIView):
             recipe=recipe,
         )
         if recipe_exist:
-            return Response(
-                {'message': 'Рецепт уже в списке покупок!'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({'success': True}, status=status.HTTP_201_CREATED)
 
         serializer.save(user=self.request.user, recipe=recipe)
 
@@ -209,15 +200,15 @@ class ShoppingListDeleteAPIView(generics.DestroyAPIView):
     """
     permission_classes = (IsAuthenticated | IsOwner,)
 
-    def get_object(self, pk):
-        return get_object_or_404(Recipe, pk=pk)
-
     def delete(self, request, pk, **kwargs):
         recipe = get_object_or_404(Recipe, pk=pk)
-        recipe_in_shopping_list = get_object_or_404(
-            ShoppingList,
-            user=request.user,
-            recipe=recipe,
-        )
-        recipe_in_shopping_list.delete()
+        try:
+            recipe_in_shoplist = ShoppingList.objects.get(
+                user=request.user,
+                recipe=recipe,
+            )
+        except ShoppingList.DoesNotExist:
+            raise Response({'success': False})
+
+        recipe_in_shoplist.delete()
         return Response({'success': True})
