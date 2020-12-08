@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'vfd%qdcj&p-)5t@wnbjom*f8)k!n4g_mawmfk7-@p#wx-+ik1='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['130.193.51.183']
 
 AUTH_USER_MODEL = 'users.User'
 
