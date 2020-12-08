@@ -71,20 +71,11 @@ class FavoriteCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         """
-        Метод создает рецепт в избранное. В процессе полю user
-        присваивается текущий пользователь.
-        Если рецепт уже добавлен в избранное, то сообщить об этом.
+        Метод добавляет рецепт в избранное. Полю user присваивается текущий
+        пользователь.
         """
         recipe_id = self.request.data.get('id')
         recipe = get_object_or_404(Recipe, id=recipe_id)
-
-        favorite_recipe_exist = RecipeFavorite.objects.filter(
-            user=self.request.user,
-            recipe=recipe,
-        )
-        if favorite_recipe_exist:
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
-
         serializer.save(user=self.request.user, recipe=recipe)
 
 
@@ -108,27 +99,11 @@ class FollowCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         """
-        Метод создает подписку на автора. В процессе полю user
-        присваивается текущий пользователь.
-        Если подписка уже существует, то сообщить об этом.
-        Нельзя подписаться на самого себя.
+        Метод создает подписку на автора. В процессе полю user присваивается
+        текущий пользователь.
         """
         user_id = self.request.data.get('id')
         following = get_object_or_404(User, id=user_id)
-
-        if following is self.request.user:
-            return Response(
-                {'success': False},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        subscription_exist = Follow.objects.filter(
-            user=self.request.user,
-            following=following,
-        )
-        if subscription_exist:
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
-
         serializer.save(user=self.request.user, following=following)
 
 
@@ -168,18 +143,9 @@ class ShoppingListCreateAPIView(generics.CreateAPIView):
         """
         Метод добавляет рецепт в список покупок. В процессе полю user
         присваивается текущий пользователь.
-        Если рецепт уже в списке покупок, то сообщить об этом.
         """
         recipe_id = self.request.data.get('id')
         recipe = get_object_or_404(Recipe, id=recipe_id)
-
-        recipe_exist = ShoppingList.objects.filter(
-            user=self.request.user,
-            recipe=recipe,
-        )
-        if recipe_exist:
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
-
         serializer.save(user=self.request.user, recipe=recipe)
 
 
