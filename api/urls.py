@@ -1,21 +1,21 @@
-from django.urls import path
+from django.urls import path, include
+
+from rest_framework.routers import DefaultRouter
 
 from .views import (
-    FavoriteCreateAPIView,
-    FavoriteDeleteAPIView,
-    FollowCreateAPIView,
-    FollowDeleteAPIView,
-    IngredientViewSet,
-    ShoppingListCreateAPIView,
-    ShoppingListDeleteAPIView
+    FavoriteViewSet,
+    FollowViewSet,
+    IngredientAPIView,
+    ShoppingListViewSet,
 )
 
+v1_router = DefaultRouter()
+
+v1_router.register('favorites', FavoriteViewSet, 'favorites')
+v1_router.register('subscriptions', FollowViewSet, 'subscriptions')
+v1_router.register('purchases', ShoppingListViewSet, 'purchases')
+
 urlpatterns = [
-    path('v1/ingredients/', IngredientViewSet.as_view()),
-    path('v1/favorites/', FavoriteCreateAPIView.as_view()),
-    path('v1/favorites/<int:pk>/', FavoriteDeleteAPIView.as_view()),
-    path('v1/subscriptions/', FollowCreateAPIView.as_view()),
-    path('v1/subscriptions/<int:pk>/', FollowDeleteAPIView.as_view()),
-    path('v1/purchases/', ShoppingListCreateAPIView.as_view()),
-    path('v1/purchases/<int:pk>/', ShoppingListDeleteAPIView.as_view()),
+    path('v1/ingredients/', IngredientAPIView.as_view()),
+    path('v1/', include(v1_router.urls)),
 ]

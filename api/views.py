@@ -8,7 +8,7 @@ from recipes.models import (
     ShoppingList,
 )
 from recipes.permissions import IsOwner
-from rest_framework import generics, status
+from rest_framework import generics, status, mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.models import User
@@ -21,7 +21,13 @@ from .serializers import (
 )
 
 
-class IngredientViewSet(generics.ListAPIView):
+class CreateDestroyViewSet(mixins.CreateModelMixin,
+                           mixins.DestroyModelMixin,
+                           viewsets.GenericViewSet):
+    pass
+
+
+class IngredientAPIView(generics.ListAPIView):
     """
     Возвращает json с отфильтрованным списком ингредиентов по заданным
     параметрам. Используется в форме создания рецепта. Только
@@ -38,27 +44,14 @@ class IngredientViewSet(generics.ListAPIView):
         return queryset
 
 
-class FavoriteDeleteAPIView(generics.DestroyAPIView):
+class FavoriteViewSet(CreateDestroyViewSet):
     """
-    APIView удаляет рецепты пользователей из списка избранного. Только владелец
+    ViewSet добавляет/удаляет рецепты  в/из списка избранного. Только владелец
     может совершать эту операцию.
-    """
-    permission_classes = (IsAuthenticated | IsOwner,)
-
-    def delete(self, request, pk, **kwargs):
-        favorite = RecipeFavorite.objects.get(pk=pk)
-        favorite.delete()
-        return Response({'success': True})
-
-
-class FavoriteCreateAPIView(generics.CreateAPIView):
-    """
-    Добавление рецепта в список избранного пользователя. Только
-    аутентифицированный пользователь может совершать запрос.
     """
     queryset = RecipeFavorite.objects.all()
     serializer_class = RecipeFavoriteSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated | IsOwner,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -78,15 +71,20 @@ class FavoriteCreateAPIView(generics.CreateAPIView):
         recipe = get_object_or_404(Recipe, id=recipe_id)
         serializer.save(user=self.request.user, recipe=recipe)
 
+    def destroy(self, request, pk, **kwargs):
+        favorite = RecipeFavorite.objects.get(pk=pk)
+        favorite.delete()
+        return Response({'success': True})
 
-class FollowCreateAPIView(generics.CreateAPIView):
+
+class FollowViewSet(CreateDestroyViewSet):
     """
-    Оформление подписки на автора. Только аутентифицированный пользователь
-    может совершать запрос.
+    Создание/удаление подписки на автора. Только аутентифицированный
+    пользователь может совершать запрос.
     """
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated | IsOwner,)
 
     def create(self, request, *args, **kwargs):
         """
@@ -106,25 +104,17 @@ class FollowCreateAPIView(generics.CreateAPIView):
         following = get_object_or_404(User, id=user_id)
         serializer.save(user=self.request.user, following=following)
 
-
-class FollowDeleteAPIView(generics.DestroyAPIView):
-    """
-    APIView удаляет подписку на автора. Только владельцы могут удалять свои
-    подписки.
-    """
-    permission_classes = (IsAuthenticated | IsOwner,)
-
-    def delete(self, request, pk, **kwargs):
+    def destroy(self, request, pk, **kwargs):
         following = get_object_or_404(User, pk=pk)
         follow = Follow.objects.get(user=request.user, following=following)
         follow.delete()
         return Response({'success': True})
 
 
-class ShoppingListCreateAPIView(generics.CreateAPIView):
+class ShoppingListViewSet(CreateDestroyViewSet):
     """
-    Добавление рецепта в список покупок. Только владельцы могут совершать это
-    действие.
+    Добавление/удаление рецепта в список покупок. Только владельцы могут
+    совершать это действие.
     """
     queryset = ShoppingList.objects.all()
     serializer_class = ShoppingListSerializer
@@ -148,15 +138,7 @@ class ShoppingListCreateAPIView(generics.CreateAPIView):
         recipe = get_object_or_404(Recipe, id=recipe_id)
         serializer.save(user=self.request.user, recipe=recipe)
 
-
-class ShoppingListDeleteAPIView(generics.DestroyAPIView):
-    """
-    APIView удаляет рецепты из списка покупок. Только владельцы могут совершать
-    это действие.
-    """
-    permission_classes = (IsAuthenticated | IsOwner,)
-
-    def delete(self, request, pk, **kwargs):
+    def destroy(self, request, pk, **kwargs):
         recipe = Recipe.objects.get(pk=pk)
         recipe_in_shoplist = ShoppingList.objects.get(
             user=request.user,
