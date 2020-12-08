@@ -46,10 +46,7 @@ class FavoriteDeleteAPIView(generics.DestroyAPIView):
     permission_classes = (IsAuthenticated | IsOwner,)
 
     def delete(self, request, pk, **kwargs):
-        try:
-            favorite = RecipeFavorite.objects.get(pk=pk)
-        except self.queryset.model.DoesNotExist:
-            return Response({'success': False})
+        favorite = RecipeFavorite.objects.get(pk=pk)
         favorite.delete()
         return Response({'success': True})
 
@@ -68,10 +65,9 @@ class FavoriteCreateAPIView(generics.CreateAPIView):
         Переопределяем метод, чтобы вернуть сообщение {'success': True}.
         """
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
-        return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({'success': True}, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         """
@@ -106,10 +102,9 @@ class FollowCreateAPIView(generics.CreateAPIView):
         Переопределяем метод, чтобы вернуть сообщение {'success': True}.
         """
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
-        return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({'success': True}, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         """
@@ -123,7 +118,7 @@ class FollowCreateAPIView(generics.CreateAPIView):
 
         if following is self.request.user:
             return Response(
-                {'message': 'Нельзя подписаться на самого себя'},
+                {'success': False},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -146,11 +141,7 @@ class FollowDeleteAPIView(generics.DestroyAPIView):
 
     def delete(self, request, pk, **kwargs):
         following = get_object_or_404(User, pk=pk)
-        try:
-            follow = Follow.objects.get(user=request.user, following=following)
-        except Follow.DoesNotExist:
-            return Response({'success': False})
-
+        follow = Follow.objects.get(user=request.user, following=following)
         follow.delete()
         return Response({'success': True})
 
@@ -169,10 +160,9 @@ class ShoppingListCreateAPIView(generics.CreateAPIView):
         Переопределяем метод, чтобы вернуть сообщение {'success': True}.
         """
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            return Response({'success': True}, status=status.HTTP_201_CREATED)
-        return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({'success': True}, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         """
@@ -201,14 +191,10 @@ class ShoppingListDeleteAPIView(generics.DestroyAPIView):
     permission_classes = (IsAuthenticated | IsOwner,)
 
     def delete(self, request, pk, **kwargs):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        try:
-            recipe_in_shoplist = ShoppingList.objects.get(
-                user=request.user,
-                recipe=recipe,
-            )
-        except ShoppingList.DoesNotExist:
-            raise Response({'success': False})
-
+        recipe = Recipe.objects.get(pk=pk)
+        recipe_in_shoplist = ShoppingList.objects.get(
+            user=request.user,
+            recipe=recipe,
+        )
         recipe_in_shoplist.delete()
         return Response({'success': True})

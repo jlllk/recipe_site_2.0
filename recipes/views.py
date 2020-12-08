@@ -18,7 +18,7 @@ from .models import (
     RecipeIngredient,
     ShoppingList
 )
-from .utilities import (
+from .utils import (
     buffered_shopping_list,
     create_ingredients,
     update_list_of_ingredients,
