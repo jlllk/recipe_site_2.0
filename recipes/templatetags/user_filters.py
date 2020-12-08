@@ -11,35 +11,24 @@ def add_class(field, css):
 
 
 @register.simple_tag
-def add_query_params(request, tag):
+def change_query_params(request, tag):
 
-    get_dict = request.GET.copy()
+    q_dict = request.GET.copy()
+    tags = q_dict.getlist('tag')
 
-    tags = get_dict.get('tag')
-    if tags:
-        tag_list = tags.split(',')
-        if tag in tag_list:
-            tag_list.remove(tag)
-
-            if len(tag_list) == 0:
-                get_dict.clear()
-                return get_dict.urlencode()
-        else:
-            tag_list.append(tag)
-        tags_string = ','.join(tag_list)
-        get_dict['tag'] = tags_string
+    if tag in tags:
+        tags.remove(tag)
+        q_dict.setlist('tag', tags)
     else:
-        get_dict['tag'] = tag
-
-    return get_dict.urlencode()
+        q_dict.update({'tag': tag})
+    return q_dict.urlencode()
 
 
 @register.simple_tag
 def active_checkbox(request, tag):
-    tags = request.GET.get('tag')
+    tags = request.GET.getlist('tag')
     if tags:
-        tag_list = tags.split(',')
-        if tag in tag_list:
+        if tag in tags:
             return 'tags__checkbox_active'
 
 

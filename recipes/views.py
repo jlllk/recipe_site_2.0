@@ -36,9 +36,9 @@ class HomePageView(ListView):
         Фильтруем данные в зависимости от набора переданных в урл тэгов.
         """
         qs = super().get_queryset()
-        tags = self.request.GET.get('tag', None)
-        if tags is not None:
-            qs = qs.filter_by_tags(tags.split(','))
+        tags = self.request.GET.getlist('tag')
+        if tags:
+            qs = qs.filter_by_tags(tags)
         return qs
 
 
@@ -103,9 +103,9 @@ class RecipeAuthorPageView(DetailView, MultipleObjectMixin):
         по тегам, если они переданы в запросе.
         """
         author_recipes = self.object.recipes.all()
-        tags = self.request.GET.get('tag', None)
-        if tags is not None:
-            author_recipes = author_recipes.filter_by_tags(tags.split(','))
+        tags = self.request.GET.getlist('tag')
+        if tags:
+            author_recipes = author_recipes.filter_by_tags(tags)
         context = super().get_context_data(
             object_list=author_recipes,
             **kwargs,
@@ -126,9 +126,9 @@ class RecipeFavoriteView(LoginRequiredMixin, ListView):
         """
         favorite = super().get_queryset()
         favorite = favorite.filter(user=self.request.user)
-        tags = self.request.GET.get('tag', None)
-        if tags is not None:
-            favorite = favorite.filter_by_tags(tags.split(','))
+        tags = self.request.GET.getlist('tag')
+        if tags:
+            favorite = favorite.filter_by_tags(tags)
         return favorite
 
 
