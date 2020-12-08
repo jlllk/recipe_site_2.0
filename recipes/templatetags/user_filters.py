@@ -12,7 +12,6 @@ def add_class(field, css):
 
 @register.simple_tag
 def change_query_params(request, tag):
-
     q_dict = request.GET.copy()
     tags = q_dict.getlist('tag')
 
