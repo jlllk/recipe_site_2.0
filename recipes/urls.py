@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    DownloadShoppingList,
     RecipeAuthorPageView,
     RecipeCreateView,
     RecipeDeleteView,
@@ -8,8 +9,7 @@ from .views import (
     RecipeFavoriteView,
     RecipeUpdateView,
     ShoppingListView,
-    UserFollowView,
-    DownloadShoppingList,
+    UserFollowView
 )
 
 urlpatterns = [

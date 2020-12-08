@@ -5,7 +5,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-from .models import RecipeIngredient, Ingredient
+from .models import Ingredient, RecipeIngredient
 
 
 def buffered_shopping_list(ingredients_sum):

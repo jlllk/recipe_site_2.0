@@ -1,7 +1,14 @@
 from django.shortcuts import get_object_or_404
-from recipes.models import Follow, Ingredient, RecipeFavorite, ShoppingList, Recipe
-from users.models import User
+
+from recipes.models import (
+    Follow,
+    Ingredient,
+    Recipe,
+    RecipeFavorite,
+    ShoppingList
+)
 from rest_framework import serializers
+from users.models import User
 
 
 class IngredientSerializer(serializers.ModelSerializer):

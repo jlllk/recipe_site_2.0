@@ -12,7 +12,6 @@ from django.views.generic.list import ListView, MultipleObjectMixin
 from .forms import RecipeCreationModelForm
 from .models import (
     Follow,
-    Ingredient,
     Recipe,
     RecipeFavorite,
     RecipeIngredient,
@@ -21,7 +20,7 @@ from .models import (
 from .utils import (
     buffered_shopping_list,
     create_ingredients,
-    update_list_of_ingredients,
+    update_list_of_ingredients
 )
 
 User = get_user_model()

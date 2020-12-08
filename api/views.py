@@ -5,10 +5,10 @@ from recipes.models import (
     Ingredient,
     Recipe,
     RecipeFavorite,
-    ShoppingList,
+    ShoppingList
 )
 from recipes.permissions import IsOwner
-from rest_framework import generics, status, mixins, viewsets
+from rest_framework import generics, mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.models import User
