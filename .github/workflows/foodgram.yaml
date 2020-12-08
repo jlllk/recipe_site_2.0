@@ -54,7 +54,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker pull jllllk/foodgram:latest
             sudo docker-compose up --force-recreate --no-deps -d web
