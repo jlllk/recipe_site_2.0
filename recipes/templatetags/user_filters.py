@@ -67,3 +67,9 @@ def already_in_shopping_list(user, recipe):
 def already_following(user, following):
     following = Follow.objects.filter(user=user, following=following).exists()
     return following
+
+
+@register.simple_tag
+def active_page(path, url):
+    if path == url:
+        return 'nav__item_active'

@@ -1,24 +1,33 @@
+{% load user_filters %}
+
 <header class="header">
       <nav class="nav">
           <div class="nav__container container">
               <ul class="nav__items list">
-                  <li class="nav__item nav__item_active"><a href="{%  url 'home_page' %}" class="nav__link link">Рецепты</a></li>
+                {%  url 'home_page' as home_page_url %}
+                  <li class="nav__item {% active_page request.path home_page_url %}"><a href="{{ home_page_url }}" class="nav__link link">Рецепты</a></li>
                   {% if request.user.is_authenticated %}
-                      <li class="nav__item"><a href="{% url 'user_follow' %}" class="nav__link link">Мои подписки</a></li>
-                      <li class="nav__item"><a href="{% url 'recipe_create' %}" class="nav__link link">Создать рецепт</a></li>
-                      <li class="nav__item"><a href="{% url 'recipe_favorite' %}" class="nav__link link">Избранное</a></li>
-                    <li class="nav__item"><a href="{% url 'shopping_list' %}" class="nav__link link">Список покупок</a> <span class="badge badge_style_blue nav__badge" id="counter">{{ request.user.shopping_list.count }}</span></li>
+                      {% url 'user_follow' as user_follow_url %}
+                      <li class="nav__item {% active_page request.path user_follow_url %}"><a href="{{ user_follow_url }}" class="nav__link link">Мои подписки</a></li>
+                      {% url 'recipe_create' as recipe_create_url %}
+                      <li class="nav__item {% active_page request.path recipe_create_url %}"><a href="{{ recipe_create_url }}" class="nav__link link">Создать рецепт</a></li>
+                      {% url 'recipe_favorite' as recipe_favorite_url %}
+                      <li class="nav__item {% active_page request.path recipe_favorite_url %}"><a href="{{ recipe_favorite_url }}" class="nav__link link">Избранное</a></li>
+                      {% url 'shopping_list' as shopping_list_url %}
+                      <li class="nav__item {% active_page request.path shopping_list_url %}"><a href="{{ shopping_list_url }}" class="nav__link link">Список покупок</a> <span class="badge badge_style_blue nav__badge" id="counter">{{ request.user.shopping_list.count }}</span></li>
                   {% endif %}
 
               </ul>
               {% if request.user.is_authenticated %}
+                  {% url 'change_password' as  change_password_url %}
                     <ul class="nav__items list">
-                      <li class="nav__item"><a href="{% url 'change_password' %}" class="nav__link link">Изменить пароль</a></li>
+                      <li class="nav__item {% active_page request.path change_password_url %}"><a href="{{ change_password_url }}" class="nav__link link">Изменить пароль</a></li>
                       <li class="nav__item"><a href="{% url 'logout' %}" class="nav__link link">Выход</a></li>
                   </ul>
               {% else %}
                   <ul class="nav__items list">
-                    <li class="nav__item"><a href="{% url 'login' %}" class="nav__link link">Войти</a></li>
+                    {% url 'login' as login_url %}
+                    <li class="nav__item {% active_page request.path login_url %}"><a href="{{ login_url }}" class="nav__link link">Войти</a></li>
                     <li class="nav__item"><a href="{% url 'signup' %}" class="button button_style_blue">Создать аккаунт</a></li>
                 </ul>
               {% endif %}
