@@ -18,7 +18,11 @@ from .models import (
     RecipeIngredient,
     ShoppingList
 )
-from .utilities import buffered_shopping_list
+from .utilities import (
+    buffered_shopping_list,
+    create_ingredients,
+    update_list_of_ingredients,
+)
 
 User = get_user_model()
 
@@ -42,44 +46,6 @@ class RecipeDetailView(DetailView):
     model = Recipe
 
 
-def create_ingredients(form, recipe):
-    known_ids = []
-
-    # Собираем id полей формы с ингридиентами, которые не относятся к
-    # RecipeCreationModelForm.
-    for items in form.data.keys():
-        if 'nameIngredient' in items:
-            name, id = items.split('_')
-            known_ids.append(id)
-
-    ingredients_list = []
-    for id in known_ids:
-        # Создаем экземпляры классов Ingredient и RecipeIngredient на
-        # основе данных из формы, используя собранные ранее id в known_ids.
-        ingredient, created = Ingredient.objects.get_or_create(
-            title=form.data.get(f'nameIngredient_{id}'),
-            dimension=form.data.get(f'unitsIngredient_{id}')
-        )
-        rec_ingredient, created = RecipeIngredient.objects.get_or_create(
-            recipe=recipe,
-            ingredient=ingredient,
-            quantity=form.data.get(f'valueIngredient_{id}')
-        )
-        ingredients_list.append(rec_ingredient)
-
-    return ingredients_list
-
-
-def update_list_of_ingredients(updated_ingredients, recipe):
-    all_ingredients = RecipeIngredient.objects.filter(recipe=recipe)
-    # Удаляем из базы ингридиенты, которые не оказались в списке
-    # updated_ingredients, т.е. пользователь удалил их в форме при
-    # редактировании рецепта.
-    for ingredient in all_ingredients:
-        if ingredient not in updated_ingredients:
-            ingredient.delete()
-
-
 class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = Recipe
     form_class = RecipeCreationModelForm
@@ -88,7 +54,7 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         response = super().form_valid(form)
-        createe_ingredients(form=form, recipe=self.object)
+        create_ingredients(form=form, recipe=self.object)
         return response
 
     def get_success_url(self):

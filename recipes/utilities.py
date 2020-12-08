@@ -5,6 +5,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
+from .models import RecipeIngredient, Ingredient
+
 
 def buffered_shopping_list(ingredients_sum):
     """
@@ -34,3 +36,41 @@ def buffered_shopping_list(ingredients_sum):
     buffer.seek(0)
 
     return buffer
+
+
+def create_ingredients(form, recipe):
+    known_ids = []
+
+    # Собираем id полей формы с ингридиентами, которые не относятся к
+    # RecipeCreationModelForm.
+    for items in form.data.keys():
+        if 'nameIngredient' in items:
+            name, id = items.split('_')
+            known_ids.append(id)
+
+    ingredients_list = []
+    for id in known_ids:
+        # Создаем экземпляры классов Ingredient и RecipeIngredient на
+        # основе данных из формы, используя собранные ранее id в known_ids.
+        ingredient, created = Ingredient.objects.get_or_create(
+            title=form.data.get(f'nameIngredient_{id}'),
+            dimension=form.data.get(f'unitsIngredient_{id}')
+        )
+        rec_ingredient, created = RecipeIngredient.objects.get_or_create(
+            recipe=recipe,
+            ingredient=ingredient,
+            quantity=form.data.get(f'valueIngredient_{id}')
+        )
+        ingredients_list.append(rec_ingredient)
+
+    return ingredients_list
+
+
+def update_list_of_ingredients(updated_ingredients, recipe):
+    all_ingredients = RecipeIngredient.objects.filter(recipe=recipe)
+    # Удаляем из базы ингридиенты, которые не оказались в списке
+    # updated_ingredients, т.е. пользователь удалил их в форме при
+    # редактировании рецепта.
+    for ingredient in all_ingredients:
+        if ingredient not in updated_ingredients:
+            ingredient.delete()
