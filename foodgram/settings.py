@@ -4,16 +4,16 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = 'vfd%qdcj&p-)5t@wnbjom*f8)k!n4g_mawmfk7-@p#wx-+ik1='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), '*']
 
 AUTH_USER_MODEL = 'users.User'
 
-SITE_ID = 2
+SITE_ID = 1
 
 # Application definition
 
@@ -141,3 +141,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+DEFAULT_FROM_EMAIL = 'Foodgram support <robomot@foodgram.face>'
+SUBJECT_CONFIRMATION = 'Password reset'
