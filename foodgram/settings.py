@@ -4,16 +4,16 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'vfd%qdcj&p-)5t@wnbjom*f8)k!n4g_mawmfk7-@p#wx-+ik1='
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['130.193.51.183']
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
 AUTH_USER_MODEL = 'users.User'
 
-SITE_ID = 1
+SITE_ID = 2
 
 # Application definition
 
