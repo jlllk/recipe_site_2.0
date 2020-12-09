@@ -32,6 +32,8 @@
                         {% include 'recipes/favorite_button.html' with user=request.user recipe=item.recipe %}
                     </div>
                 </div>
+            {% empty %}
+                <h3 class="recipe__title">Список избранного пуст!</h3>
             {% endfor %}
 
         </div>
