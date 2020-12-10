@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import ValidationError
 from django.http import FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -70,9 +71,9 @@ class RecipeUpdateView(UserPassesTestMixin, UpdateView):
         return self.request.user == recipe.author or self.request.user.is_admin
 
     def form_valid(self, form):
-        response = super().form_valid(form)
         ingredients_list = create_ingredients(form=form, recipe=self.object)
         update_list_of_ingredients(ingredients_list, recipe=self.object)
+        response = super().form_valid(form)
         return response
 
     def get_success_url(self):

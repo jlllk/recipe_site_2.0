@@ -1,5 +1,7 @@
 import io
 
+from django.core.exceptions import ValidationError
+
 from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -52,10 +54,11 @@ def create_ingredients(form, recipe):
     for id in known_ids:
         # Создаем экземпляры классов Ingredient и RecipeIngredient на
         # основе данных из формы, используя собранные ранее id в known_ids.
-        ingredient, created = Ingredient.objects.get_or_create(
+        ingredient = Ingredient.objects.get(
             title=form.data.get(f'nameIngredient_{id}'),
             dimension=form.data.get(f'unitsIngredient_{id}')
         )
+
         rec_ingredient, created = RecipeIngredient.objects.get_or_create(
             recipe=recipe,
             ingredient=ingredient,

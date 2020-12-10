@@ -55,7 +55,7 @@ class Recipe(models.Model):
         verbose_name='Описание'
     )
     tag = models.ManyToManyField(Tag, blank=False, related_name='recipes')
-    cooking_time = models.SmallIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         blank=False,
         verbose_name='Время приготовления',
     )
