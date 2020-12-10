@@ -113,6 +113,7 @@ env.bak/
 venv.bak/
 media
 sent_emails
+*dev*
 
 # Spyder project settings
 .spyderproject
