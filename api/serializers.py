@@ -8,6 +8,7 @@ from recipes.models import (
     ShoppingList
 )
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
 
 
@@ -18,57 +19,84 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeFavoriteSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
 
-    def validate(self, data):
-        """
-        Нельзя дважды добавить рецепт в список покупок.
-        """
-        id = data.get('id')
-        recipe = get_object_or_404(Recipe, id=id)
-        user = self.context['request'].user
-        if RecipeFavorite.objects.filter(user=user, recipe=recipe).exists():
-            raise serializers.ValidationError({'success': False})
-        return data
+    id = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=Recipe.objects.all(),
+        source='recipe'
+    )
+    user = serializers.StringRelatedField(
+        default=serializers.CurrentUserDefault(),
+        read_only=True
+    )
 
     class Meta:
-        fields = ('id',)
         model = RecipeFavorite
+        fields = ('id', 'user')
+        validators = (
+            UniqueTogetherValidator(
+                queryset=RecipeFavorite.objects.all(),
+                fields=('id', 'user')),
+        )
+
+    def create(self, validated_data):
+        """ Создаётся связь """
+        if 'user' not in validated_data:
+            validated_data['user'] = self.context['request'].user
+        return RecipeFavorite.objects.create(**validated_data)
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
 
-    def validate(self, data):
-        """
-        Нельзя подписаться на самого себя.
-        """
-        id = data.get('id')
-        following = get_object_or_404(User, id=id)
-        user = self.context['request'].user
-        if following == user:
-            raise serializers.ValidationError({'success': False})
-        return data
+    id = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=User.objects.all(),
+        source='following'
+    )
+    user = serializers.StringRelatedField(
+        default=serializers.CurrentUserDefault(),
+        read_only=True
+    )
 
     class Meta:
-        fields = ('id',)
-        model = Follow
+        model = RecipeFavorite
+        fields = ('id', 'user')
+        validators = (
+            UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('id', 'user')),
+        )
+
+    def create(self, validated_data):
+        """ Создаётся связь """
+        if 'user' not in validated_data:
+            validated_data['user'] = self.context['request'].user
+        return Follow.objects.create(**validated_data)
 
 
 class ShoppingListSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
 
-    def validate(self, data):
-        """
-        Нельзя дважды добавить рецепт в список покупок.
-        """
-        id = data.get('id')
-        recipe = get_object_or_404(Recipe, id=id)
-        user = self.context['request'].user
-        if ShoppingList.objects.filter(user=user, recipe=recipe).exists():
-            raise serializers.ValidationError({'success': False})
-        return data
+    id = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=Recipe.objects.all(),
+        source='recipe'
+    )
+    user = serializers.StringRelatedField(
+        default=serializers.CurrentUserDefault(),
+        read_only=True
+    )
 
     class Meta:
-        fields = ('id',)
         model = ShoppingList
+        fields = ('id', 'user')
+        validators = (
+            UniqueTogetherValidator(
+                queryset=ShoppingList.objects.all(),
+                fields=('id', 'user')),
+        )
+
+    def create(self, validated_data):
+        """ Создаётся связь """
+        if 'user' not in validated_data:
+            validated_data['user'] = self.context['request'].user
+        return ShoppingList.objects.create(**validated_data)

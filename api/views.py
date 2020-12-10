@@ -62,15 +62,6 @@ class FavoriteViewSet(CreateDestroyViewSet):
         self.perform_create(serializer)
         return Response({'success': True}, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        """
-        Метод добавляет рецепт в избранное. Полю user присваивается текущий
-        пользователь.
-        """
-        recipe_id = self.request.data.get('id')
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer.save(user=self.request.user, recipe=recipe)
-
     def destroy(self, request, pk, **kwargs):
         favorite = RecipeFavorite.objects.get(pk=pk)
         favorite.delete()
@@ -128,15 +119,6 @@ class ShoppingListViewSet(CreateDestroyViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({'success': True}, status=status.HTTP_201_CREATED)
-
-    def perform_create(self, serializer):
-        """
-        Метод добавляет рецепт в список покупок. В процессе полю user
-        присваивается текущий пользователь.
-        """
-        recipe_id = self.request.data.get('id')
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer.save(user=self.request.user, recipe=recipe)
 
     def destroy(self, request, pk, **kwargs):
         recipe = Recipe.objects.get(pk=pk)
