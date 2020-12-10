@@ -1,7 +1,5 @@
 import io
 
-from django.core.exceptions import ValidationError
-
 from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont

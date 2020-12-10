@@ -44,9 +44,9 @@ docker exec -ti web python manage.py migrate
 ```
 docker exec -ti web python manage.py createsuperuser
 ```
-При желании вы можете загрузить тестовый набор данных
+При желании вы можете загрузить тестовый набор данных из папки fixtures
 ```
-docker exec -ti web python manage.py loaddata fixtures.json
+docker exec -ti web python manage.py loaddata <path>
 ```
 
 ## Использованные технологии
