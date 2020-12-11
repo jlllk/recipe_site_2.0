@@ -63,7 +63,11 @@ class FavoriteViewSet(CreateDestroyViewSet):
         return Response({'success': True}, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, pk, **kwargs):
-        favorite = RecipeFavorite.objects.get(pk=pk)
+        favorite = get_object_or_404(
+            RecipeFavorite,
+            recipe=pk,
+            user=request.user,
+        )
         favorite.delete()
         return Response({'success': True})
 
