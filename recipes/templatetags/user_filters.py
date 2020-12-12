@@ -14,12 +14,17 @@ def add_class(field, css):
 def change_query_params(request, tag):
     q_dict = request.GET.copy()
     tags = q_dict.getlist('tag')
+    page = q_dict.get('page', None)
 
     if tag in tags:
         tags.remove(tag)
         q_dict.setlist('tag', tags)
     else:
         q_dict.update({'tag': tag})
+
+    if page:
+        q_dict.pop('page')
+
     return q_dict.urlencode()
 
 

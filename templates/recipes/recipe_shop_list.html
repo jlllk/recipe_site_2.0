@@ -18,7 +18,7 @@
                 <li class="shopping-list__item" data-id="{{ item.recipe.id }}">
                     <div class="recipe recipe_reverse">
                         <img src="{{ item.recipe.image.url }}" alt="какой-то текст" class="recipe__image recipe__image_big">
-                        <h3 class="recipe__title"><a href="{% url 'recipe_detail' pk=item.pk %}">{{ item.recipe.title }}</a></h3>
+                        <h3 class="recipe__title"><a href="{% url 'recipe_detail' pk=item.recipe.id %}">{{ item.recipe.title }}</a></h3>
                         <p class="recipe__text"><span class="icon-time"></span> {{ item.recipe.cooking_time }} мин.</p>
                     </div>
                     {% csrf_token %}
