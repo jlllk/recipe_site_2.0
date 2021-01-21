@@ -1,5 +1,3 @@
-![foodgram_worflow](https://github.com/jlllk/foodgram-project/workflows/foodgram/badge.svg)
-
 # Foodgram
 
 Foodgram — социальная сеть для любителей вкусно покушать. Публикуйте рецепты, подписывайтесь на авторов, составляйте списки покупок.
